@@ -4,7 +4,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin:'application'
 
-mainClassName = "cn.mwee.auto.misc.main.ServicesServer"
+mainClassName = "cn.mwee.auto.misc.main.AutoServer"
 
 applicationDefaultJvmArgs = ["-Xms2G", "-Xmx4G" , "-Xss256k" , "-Xincgc" , "-XX:+HeapDumpOnOutOfMemoryError" , "-Dfile.encoding=UTF-8"]
 
