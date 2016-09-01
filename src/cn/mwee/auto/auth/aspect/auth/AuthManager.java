@@ -59,9 +59,9 @@ public class AuthManager {
                     if (subject!=null){
                         ThreadContext.bind(AuthUtils.getSubject(token));
                     }
-                    if (SecurityUtils.getSubject().isAuthenticated()) {
+                   /* if (SecurityUtils.getSubject().isAuthenticated()) {
                         return new NormalReturn("503","用户状态异常");
-                    }
+                    }*/
 				} catch (Exception e) {
 
 				}
