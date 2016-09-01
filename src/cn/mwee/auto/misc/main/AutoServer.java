@@ -30,7 +30,7 @@ import cn.mwee.auto.misc.server.MyApplicationContext;
 import cn.mwee.auto.misc.server.ShutdownThread;
 
 
-public class ServicesServer extends BaseNioServer {
+public class AutoServer extends BaseNioServer {
 
     private static Logger log;
 
@@ -41,14 +41,14 @@ public class ServicesServer extends BaseNioServer {
         String log4jCfgFile =file.getAbsolutePath();
         System.setProperty("log4j.configurationFile", log4jCfgFile);
 
-        log = LoggerFactory.getLogger(ServicesServer.class);
+        log = LoggerFactory.getLogger(AutoServer.class);
 
 //		checkHttpProxy();
     }
 
     protected RestChannelHandler restHandler = new RestChannelHandler(new OrderedMemoryAwareThreadPoolExecutor(50, 2*1048576, 10*1048576));
 
-    public ServicesServer() {
+    public AutoServer() {
     }
 
     public RestChannelHandler getRestHandler() {
@@ -141,14 +141,14 @@ public class ServicesServer extends BaseNioServer {
     public static void main(String[] args) throws Exception
     {
         MyApplicationContext.getInstance();
-        ServicesServer o = new ServicesServer();
+        AutoServer o = new AutoServer();
         registerHandler(o, "jsonRouter");
         o.init();
         o.start();
         Runtime.getRuntime().addShutdownHook(new ShutdownThread(o));
     }
 
-    private static void registerHandler(ServicesServer server, String sRouter)
+    private static void registerHandler(AutoServer server, String sRouter)
             throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {
         IRouter router = (IRouter) MyApplicationContext.getInstance().getService(sRouter);
@@ -160,7 +160,7 @@ public class ServicesServer extends BaseNioServer {
         }
     }
 
-    private static void registerGetHandler(ServicesServer server, String sRouter)
+    private static void registerGetHandler(AutoServer server, String sRouter)
             throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {
         IRouter router = (IRouter) MyApplicationContext.getInstance().getService(sRouter);
@@ -172,7 +172,7 @@ public class ServicesServer extends BaseNioServer {
         }
     }
 
-    private static void registerStringHandler(ServicesServer server, String sRouter)
+    private static void registerStringHandler(AutoServer server, String sRouter)
             throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {
         IRouter router = (IRouter) MyApplicationContext.getInstance().getService(sRouter);
