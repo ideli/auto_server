@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mwee.auto.deploy.dao.FlowTaskExtMapper">
+	<resultMap id="BaseResultMap" extends="cn.mwee.auto.deploy.dao.FlowTaskMapper.BaseResultMap"
+			   type="cn.mwee.auto.deploy.model.FlowTaskExtModel">
+		<result column="name" jdbcType="VARCHAR" property="taskName" />
+	</resultMap>
+
+
+
+	<select id="getCurrentGroupNextTask" parameterType="cn.mwee.auto.deploy.model.FlowTaskExample" resultMap="cn.mwee.auto.deploy.dao.FlowTaskMapper.BaseResultMap">
+		SELECT 
+			<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Base_Column_List" />
+		from flow_tasks 
+			<if test="_parameter != null">
+		      <include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Example_Where_Clause" />
+		    </if>
+     	ORDER BY priority LIMIT 1 
+	</select>
+	
+	<select id="countUnFinishedTasks" parameterType="cn.mwee.auto.deploy.model.FlowTaskExample" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM flow_tasks 
+		<if test="_parameter != null">
+	      <include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Example_Where_Clause" />
+	    </if>
+	</select>
+	
+	<select id="countState" parameterType="cn.mwee.auto.deploy.model.FlowTaskExample" resultType="java.util.HashMap">
+		SELECT COUNT(1) as count,state FROM flow_tasks
+		<if test="_parameter != null">
+			<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Example_Where_Clause" />
+		</if>
+		GROUP BY state
+	</select>
+	
+	<insert id="insertBatch" parameterType="java.util.List">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+		insert into 
+		flow_tasks(flow_id, `zone`,task_id,`task_param`,task_type,`group`,priority,delay,`state`,create_time)
+		values
+		<foreach collection="list" item="element" index="index" open="(" separator="),("  close=")">
+            #{element.flowId},
+            #{element.zone},
+            #{element.taskId},
+            #{element.taskParam},
+			#{element.taskType},
+            #{element.group},
+            #{element.priority},
+			#{element.delay},
+            #{element.state},
+            #{element.createTime}
+       </foreach>
+	</insert>
+	
+	<select id="getPreOrPostGroupStartTasks" parameterType="cn.mwee.auto.deploy.model.FlowTaskExample" resultMap="cn.mwee.auto.deploy.dao.FlowTaskMapper.BaseResultMap">
+		SELECT 
+			<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Base_Column_List" />
+		FROM (
+			SELECT 
+				<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Base_Column_List" /> 
+			FROM flow_tasks 
+			<if test="_parameter != null">
+			  <include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Example_Where_Clause" />
+			</if> 
+			ORDER BY priority
+		) tmp
+		GROUP BY tmp.zone
+	</select>
+	<select id="getConcurrentGroupStartTasks" parameterType="cn.mwee.auto.deploy.model.FlowTaskExample" resultMap="cn.mwee.auto.deploy.dao.FlowTaskMapper.BaseResultMap">
+		SELECT 
+			<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Base_Column_List" />
+		FROM (
+			SELECT 
+				<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Base_Column_List" />
+			FROM flow_tasks 
+			<if test="_parameter != null">
+			  <include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Example_Where_Clause" />
+			</if> 
+			ORDER BY priority
+		) tmp
+		GROUP BY tmp.group
+	</select>
+
+
+	<select id="getFlowTaskExtByExample" parameterType="cn.mwee.auto.deploy.model.FlowTaskExample" resultMap="BaseResultMap">
+		SELECT
+			ft.*,t.`name`
+		FROM
+			(
+				SELECT
+				<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Base_Column_List" />
+				FROM
+					flow_tasks
+				<if test="_parameter != null">
+					<include refid="cn.mwee.auto.deploy.dao.FlowTaskMapper.Example_Where_Clause" />
+				</if>
+				<if test="orderByClause != null">
+					order by ${orderByClause}
+				</if>
+				<if test="limitStart != null and limitStart&gt;=0">
+					limit ${limitStart} , ${limitEnd}
+				</if>
+			) ft
+			LEFT JOIN tasks t ON ft.task_id = t.id
+	</select>
+
+
+
+</mapper>

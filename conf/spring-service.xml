@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+   
+	<!-- SERVICE START -->
+	<bean id="jsonRouter" class="cn.mwee.auto.misc.handler.Router">
+		<property name="mapRouter">
+		    <map>
+		    	<entry key="/auth/{label}" value="cn.mwee.auto.auth.handler.AuthHandler" />
+		    	<entry key="/deploy/{label}" value="cn.mwee.auto.deploy.handler.DeployHandler" />
+				<entry key="/task/{label}" value="cn.mwee.auto.deploy.handler.AutoTaskHandler" />
+				<entry key="/template/{label}" value="cn.mwee.auto.deploy.handler.TemplateHandler" />
+				<entry key="/user/{label}" value="cn.mwee.auto.auth.handler.UserHandler" />
+				<entry key="/role/{label}" value="cn.mwee.auto.auth.handler.RoleHandler" />
+				<entry key="/permission/{label}" value="cn.mwee.auto.auth.handler.PermissionHandler" />
+				<entry key="/zone/{label}" value="cn.mwee.auto.deploy.handler.ZoneHandler" />
+				<entry key="/project/{label}" value="cn.mwee.auto.deploy.handler.ProjectHandler" />
+			</map>
+		</property>
+	</bean>
+
+
+	<!--
+
+	<bean id="strRouter" class="cn.mwee.auto.misc.handler.Router">
+		<property name="mapRouter">
+		    <map>
+		 		<entry key="/pay_result/{label}/{platform}" value="com.huijiame.soa.pay.handler.PayResultHandler" />
+		    </map>
+		</property>
+	</bean>
+
+	-->
+
+	<!-- SERVICE END -->
+</beans>

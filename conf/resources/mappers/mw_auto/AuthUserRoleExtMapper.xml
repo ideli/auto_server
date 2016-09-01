@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mwee.auto.auth.dao.AuthUserRoleExtMapper">
+  <insert id="insertBatch" parameterType="java.util.List">
+    insert into
+    auth_user_role (user_id, role_id, creator, create_time)
+    values
+    <foreach collection="list" item="element" index="index" open="(" separator="),("  close=")">
+      #{element.userId,jdbcType=INTEGER},
+      #{element.roleId,jdbcType=INTEGER},
+      #{element.creator,jdbcType=VARCHAR},
+      #{element.createTime,jdbcType=TIMESTAMP}
+    </foreach>
+  </insert>
+</mapper>

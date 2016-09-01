@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mwee.auto.auth.dao.AuthPermissionExtMapper">
+    <resultMap id="BaseResultMap" type="cn.mwee.auto.auth.model.AuthMenu"
+                           extends="cn.mwee.auto.auth.dao.AuthPermissionMapper.BaseResultMap">
+        <association property="childMenu" column="id" select="selectChildMenu" />
+    </resultMap>
+
+    <resultMap id="MenuResultMap" type="cn.mwee.auto.auth.model.AuthMenu"
+               extends="cn.mwee.auto.auth.dao.AuthPermissionMapper.BaseResultMap">
+    </resultMap>
+
+
+
+    <select id="selectPermTree" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="cn.mwee.auto.auth.dao.AuthPermissionMapper.Base_Column_List" />
+        from auth_permission
+        where parent_id = #{parentId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectChildMenu" parameterType="java.lang.Integer"  resultMap="BaseResultMap" >
+        select
+        <include refid="cn.mwee.auto.auth.dao.AuthPermissionMapper.Base_Column_List" />
+        from auth_permission
+        where
+        parent_id = #{parentId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPermTreeByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="cn.mwee.auto.auth.dao.AuthPermissionMapper.Base_Column_List" />
+        from auth_permission
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPrivateMenu" parameterType="java.lang.Integer" resultMap="MenuResultMap" >
+        SELECT
+          DISTINCT p.id,p.*
+        FROM
+          auth_permission p LEFT JOIN auth_role_permission rp on p.id = rp.permission_id
+          LEFT JOIN auth_user_role ur ON rp.role_id = ur.role_id
+        WHERE  p.type &gt; 0
+        <if test="userId &gt; 0 " >
+            AND ur.user_id = #{userId}
+        </if>
+    </select>
+
+    <select id="selectPrivatePerm" resultMap="MenuResultMap" >
+        SELECT
+        DISTINCT p.id,p.*
+        FROM
+        auth_permission p LEFT JOIN auth_role_permission rp on p.id = rp.permission_id
+        LEFT JOIN auth_user_role ur ON rp.role_id = ur.role_id
+        WHERE  1 = 1
+        <if test="type != null " >
+            AND p.type = #{type}
+        </if>
+        <if test="userId != null " >
+            AND ur.user_id = #{userId}
+        </if>
+        <if test="parentId != null " >
+            AND p.parent_id = #{parentId}
+        </if>
+    </select>
+
+</mapper>

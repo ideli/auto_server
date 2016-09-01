@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+        <property name="connectionFactory">
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <!--broker服务的地址-->
+                <property name="brokerURL" value="${activemq.url}"/>
+                <!--默认值为1000,如果不需要这么大,可以调小-->
+                <property name="maxThreadPoolSize" value="500"/>
+            </bean>
+        </property>
+        <property name="createConnectionOnStartup" value="false"/>
+    </bean>
+
+    <bean id="jacksonMessageConverter" class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
+        <property name="targetType" value="TEXT"/>
+    </bean>
+
+    <!-- template -->
+    <bean id="activeMqTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="receiveTimeout" value="${activemq.timeout}"/>
+        <property name="messageConverter" ref="jacksonMessageConverter"/>
+    </bean>
+
+    <!-- Msg sender -->
+    <bean id="activeMQSender" class="cn.mwee.auto.common.util.MessageUtil">
+        <property name="jmsTemplate" ref="activeMqTemplate"/>
+        <property name="destinationQueueNames">
+            <list>
+                <value>${activemq.queue.flow}</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mailMQSender" class="cn.mwee.auto.common.util.MessageUtil">
+        <property name="jmsTemplate" ref="activeMqTemplate"/>
+        <property name="destinationQueueNames">
+            <list>
+                <value>${activemq.queue.mail}</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ================= MQ Listener Handler 监听队列配置 ================= -->
+    <!-- 发送消息的目的地（一个队列） -->
+    <bean id="flowDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <!-- 设置消息队列的名字 -->
+        <constructor-arg index="0" value="${activemq.queue.flow}" />
+    </bean>
+
+    <!-- 消息监听容器 -->
+    <bean id="jmsContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="connectionFactory" ref="jmsFactory" />
+        <property name="destination" ref="flowDestination" />
+        <property name="messageListener" ref="activeMQMessageListener" />
+        <property name="concurrentConsumers" value="50" />
+    </bean>
+
+    <!-- 消息监听器 -->
+    <bean id="activeMQMessageListener" class="cn.mwee.auto.listener.auto.ActiveMQMessageListener">
+        <property name="flowTaskListener" ref="flowTaskListener"/>
+    </bean>
+
+    <bean id="flowTaskListener" class="cn.mwee.auto.listener.auto.FlowTaskListener"	>
+        <property name="taskExecutor" ref="simpleTaskExecutor" />
+    </bean>
+
+    <!-- ================= 区域状态监控 MQ Listener Handler 监听队列配置 ================= -->
+    <!-- 发送消息的目的地 -->
+    <bean id="zoneStatusDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <!-- 设置消息队列的名字 -->
+        <constructor-arg index="0" value="${activemq.queue.zoneMonitor.schedule}" />
+    </bean>
+
+    <!-- 消息监听容器 -->
+    <bean id="jmsZoneStatusContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="connectionFactory" ref="jmsFactory" />
+        <property name="destination" ref="zoneStatusDestination" />
+        <property name="messageListener" ref="zoneStatusMQMessageListener" />
+        <property name="concurrentConsumers" value="50" />
+    </bean>
+
+    <!-- 消息监听器 -->
+    <bean id="zoneStatusMQMessageListener" class="cn.mwee.auto.listener.auto.ZoneStatusMQMessageListener" />
+
+</beans>

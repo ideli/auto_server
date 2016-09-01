@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		 ">
+	<!-- mybatis -->
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"></property>
+    	<property name="mapperLocations" value="classpath:resources/mappers/mw_auto/*.xml"></property>
+    	<property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+    
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">    
+  		<property name="basePackage" value="cn.mwee.auto.*.dao" />
+  		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	<!-- mybatis end -->
+
+    <!-- 任务日志异步记录 -->
+	<bean id="taskLogExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	    <property name="corePoolSize" value="1" />
+	    <property name="maxPoolSize" value="1" />
+	    <property name="queueCapacity" value="5000" />
+	</bean>
+
+
+    <!-- 异步执行 -->
+	<bean id="simpleExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="1" />
+		<property name="maxPoolSize" value="5" />
+		<property name="queueCapacity" value="500" />
+	</bean>
+
+</beans>
