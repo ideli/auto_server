@@ -26,7 +26,8 @@ public class JgitTest {
 
 	@Test
 	public void test() {
-		String REMOTE_URL = "http://git.9now.net:10080/devops/mw_auto.git";
+//		String REMOTE_URL = "http://git.9now.net:10080/devops/mw_auto.git";
+        String REMOTE_URL = "ssh://git@git.9now.net:10022/devops/mw_auto.git";
 		Collection<Ref> refs = null;
 		CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider("mengfanyuan","wt19892414");
 		try {

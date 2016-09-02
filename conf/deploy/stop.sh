@@ -9,4 +9,3 @@ then
 pkill -9 -f "$PROCESS_NAME"
 fi
 echo "stop ok"
-echo "MW_SUCCESS"
