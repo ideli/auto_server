@@ -66,9 +66,9 @@ public class AuthManager {
 				} catch (Exception e) {
                     return new NormalReturn("503","用户状态异常");
 				}
-			} else {
+			} /*else {
                 return new NormalReturn("502","user has no login");
-			}
+			}*/
 		}
 		try {
 			return joinPoint.proceed();
