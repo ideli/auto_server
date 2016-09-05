@@ -117,7 +117,7 @@ public interface IUserService {
 	/**
 	 * 用户授权角色
 	 * @param authUser
-	 * @param roles
+	 * @param roleIds
      */
 	int updateUserGrant(AuthUser authUser, List<Integer> roleIds);
 

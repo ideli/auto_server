@@ -66,6 +66,8 @@ public class AuthManager {
 				} catch (Exception e) {
                     return new NormalReturn("503","用户状态异常");
 				}
+			} else {
+                return new NormalReturn("502","user has no login");
 			}
 		}
 		try {
