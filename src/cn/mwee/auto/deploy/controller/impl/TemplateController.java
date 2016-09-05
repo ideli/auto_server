@@ -8,10 +8,7 @@ import cn.mwee.auto.deploy.model.AutoTemplate;
 import cn.mwee.auto.deploy.model.Flow;
 import cn.mwee.auto.deploy.model.TemplateTask;
 import cn.mwee.auto.deploy.model.TemplateZone;
-import cn.mwee.auto.deploy.service.IFlowManagerService;
-import cn.mwee.auto.deploy.service.IProjectService;
-import cn.mwee.auto.deploy.service.ITemplateManagerService;
-import cn.mwee.auto.deploy.service.IZoneService;
+import cn.mwee.auto.deploy.service.*;
 import cn.mwee.auto.deploy.util.AutoConsts;
 import cn.mwee.auto.misc.aspect.contract.Contract;
 import cn.mwee.auto.misc.aspect.contract.Model;
@@ -28,9 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by huming on 16/7/21.
@@ -51,6 +46,9 @@ public class TemplateController extends AutoAbstractController implements ITempl
 
     @Resource
     private IFlowManagerService flowManagerService;
+
+    @Resource
+    private ITaskManagerService taskManagerService;
 
     @Override
     @Contract(QueryTemplatesRequest.class)
@@ -203,12 +201,16 @@ public class TemplateController extends AutoAbstractController implements ITempl
             //区信息
             result.put("zones", templateManagerService.getTemplateZones(templateId));
             //任务信息
-            result.put("templateTasks", templateManagerService.getTemplateTasks(templateId));
+            List<TemplateTask> templateTasks = templateManagerService.getTemplateTasks(templateId);
+            result.put("templateTasks", templateTasks);
             //监控配置
             result.put("monitorInfo", templateManagerService.getTemplateZoneMonitor(templateId));
             //回滚模板数据
             result.put("rollbackTemplate", templateManagerService.getRollbackTemplateTasks(templateId));
 
+            Set<Integer> taskIds = new HashSet<>();
+            templateTasks.forEach(templateTask -> taskIds.add(templateTask.getTaskId()));
+            result.put("autoTasks",taskManagerService.getAutoTasksByIds(taskIds));
             return new NormalReturn(result);
         }
         catch (Exception e)

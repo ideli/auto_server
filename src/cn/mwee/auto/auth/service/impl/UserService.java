@@ -197,7 +197,7 @@ public class UserService implements IUserService {
 
     @Override
     public int updateUserGrant(AuthUser authUser,List<Integer> roleIds) {
-        String currentUser = SecurityUtils.getSubject().getPrincipal().toString();
+        String currentUser = AuthUtils.getCurrUserName();
         List<AuthUserRole> userRoles = new ArrayList<>();
         roleIds.forEach(roleId -> {
             AuthUserRole userRole = new AuthUserRole();
