@@ -206,10 +206,12 @@ public class TemplateController extends AutoAbstractController implements ITempl
             //监控配置
             result.put("monitorInfo", templateManagerService.getTemplateZoneMonitor(templateId));
             //回滚模板数据
-            result.put("rollbackTemplate", templateManagerService.getRollbackTemplateTasks(templateId));
+            List<TemplateTask> rollTemplateTasks = templateManagerService.getRollbackTemplateTasks(templateId);
+            result.put("rollbackTemplate", rollTemplateTasks);
 
             Set<Integer> taskIds = new HashSet<>();
             templateTasks.forEach(templateTask -> taskIds.add(templateTask.getTaskId()));
+            rollTemplateTasks.forEach(templateTask -> taskIds.add(templateTask.getTaskId()));
             result.put("autoTasks",taskManagerService.getAutoTasksByIds(taskIds));
             return new NormalReturn(result);
         }
