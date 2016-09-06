@@ -5,7 +5,9 @@ function check() {
     exit 1
   fi
 }
+echo "java ---"
 java -version
+echo "version---"
 PROJECT_NAME=mw_auto
 gradle clean && gradle installDist -x Test
 check $?
