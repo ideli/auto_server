@@ -5,6 +5,7 @@ function check() {
     exit 1
   fi
 }
+java -version
 PROJECT_NAME=mw_auto
 gradle clean && gradle installDist -x Test
 check $?
