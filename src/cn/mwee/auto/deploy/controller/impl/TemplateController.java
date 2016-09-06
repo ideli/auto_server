@@ -294,7 +294,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
     public NormalReturn cloneTemplate(ServiceRequest request)
     {
         CloneTemplateRequest req = request.getContract();
-        templateManagerService.cloneTemplate(req.getTemplateId());
+        templateManagerService.cloneTemplate(req.getTemplateId(),req.getName());
         return new NormalReturn("success");
     }
 
