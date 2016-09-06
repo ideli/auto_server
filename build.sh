@@ -1,13 +1,12 @@
 #!/bin/sh
-echo "java ---"
 
 echo $LANG
-
-source /etc/profile
-
 echo $JAVA_HOME
 
 
+source /etc/profile
 
+echo "java ---"
+echo $JAVA_HOME
 java -version
 echo "version---"
