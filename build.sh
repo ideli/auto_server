@@ -8,5 +8,5 @@ source /etc/profile
 
 echo "java ---"
 echo $JAVA_HOME
-java -version
+/usr/java/jdk1.8.0_91/java -version
 echo "version---"
