@@ -47,6 +47,7 @@ public class AuthManager {
 				&& signature.getReturnType().getName().equals("cn.mwee.auto.misc.resp.NormalReturn")){
 			ServiceRequest req = (ServiceRequest)args[0];
 			String token = req.getJson().getString("token");
+            String path = req.getRequest().getPath();
 			if (StringUtils.isNotBlank(token)) {
 				try {
                     /*
@@ -57,18 +58,19 @@ public class AuthManager {
                     */
                     Subject subject = AuthUtils.getSubject(token);
                     if (subject!=null){
-						boolean flag = subject.isAuthenticated();
                         ThreadContext.bind(subject);
                     }
-                    /*if (!SecurityUtils.getSubject().isAuthenticated()) {
-                        return new NormalReturn("502","用户状态异常");
-                    }*/
+                    if (!SecurityUtils.getSubject().isAuthenticated()) {
+                        return new NormalReturn("502","当前用户未登陆或session已过期,请刷新后重试");
+                    }
 				} catch (Exception e) {
                     return new NormalReturn("503","用户状态异常");
 				}
-			} /*else {
-                return new NormalReturn("502","user has no login");
-			}*/
+			} else {
+                if (!path.contains("/auth/login")){
+                    return new NormalReturn("502","user has no login");
+                }
+			}
 		}
 		try {
 			return joinPoint.proceed();
