@@ -5,7 +5,7 @@ function check() {
     exit 1
   fi
 }
-#source /etc/profile
+source /etc/profile
 java -version
 PROJECT_NAME=mw_auto
 gradle clean && gradle installDist -x Test
