@@ -17,6 +17,7 @@
         <include refid="cn.mwee.auto.auth.dao.AuthPermissionMapper.Base_Column_List" />
         from auth_permission
         where parent_id = #{parentId,jdbcType=INTEGER}
+        ORDER BY id
     </select>
 
     <select id="selectChildMenu" parameterType="java.lang.Integer"  resultMap="BaseResultMap" >
@@ -25,6 +26,7 @@
         from auth_permission
         where
         parent_id = #{parentId,jdbcType=INTEGER}
+        ORDER BY id
     </select>
 
     <select id="selectPermTreeByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
@@ -44,6 +46,7 @@
         <if test="userId &gt; 0 " >
             AND ur.user_id = #{userId}
         </if>
+        ORDER BY p.id
     </select>
 
     <select id="selectPrivatePerm" resultMap="MenuResultMap" >
@@ -62,6 +65,7 @@
         <if test="parentId != null " >
             AND p.parent_id = #{parentId}
         </if>
+        ORDER BY p.id
     </select>
 
 </mapper>
