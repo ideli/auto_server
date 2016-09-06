@@ -16,6 +16,7 @@ import cn.mwee.auto.deploy.model.*;
 
 import static cn.mwee.auto.deploy.util.AutoConsts.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -135,6 +136,7 @@ public class TaskManagerService implements ITaskManagerService {
 
     @Override
     public List<AutoTask> getAutoTasksByIds(Set<Integer> ids) {
+        if (CollectionUtils.isEmpty(ids)) return new ArrayList<>();
         List idList = new ArrayList(ids);
         AutoTaskExample example = new AutoTaskExample();
         example.createCriteria().andIdIn(idList);
