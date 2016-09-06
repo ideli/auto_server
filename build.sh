@@ -12,4 +12,4 @@ cp -r conf/ build/install/"$PROJECT_NAME"/bin/conf/
 cd build/install/
 tar cvzf  "$PROJECT_NAME".tar.gz "$PROJECT_NAME"/
 mv -f "$PROJECT_NAME".tar.gz ../../
-#echo "MW_SUCCESS"
+echo "MW_SUCCESS"
