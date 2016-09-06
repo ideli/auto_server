@@ -6,6 +6,7 @@ import cn.mwee.auto.auth.util.AuthUtils;
 import cn.mwee.auto.auth.util.SqlUtils;
 import cn.mwee.auto.common.db.BaseModel;
 import cn.mwee.auto.common.db.BaseQueryResult;
+import cn.mwee.auto.common.util.DateUtil;
 import cn.mwee.auto.deploy.contract.flow.FlowAddContract;
 import cn.mwee.auto.deploy.contract.flow.FlowQueryContract;
 import cn.mwee.auto.deploy.dao.*;
@@ -34,6 +35,7 @@ import com.alibaba.fastjson.JSON;
 
 import javax.annotation.Resource;
 
+import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -81,6 +83,8 @@ public class FlowManagerService implements IFlowManagerService {
     @Value("${auto.bak.dir}")
     private String autoBakDir;
 
+    private int flowExeDelay = 1;
+
     @Override
     public Integer createFlow(FlowAddContract req) {
         Flow flow = createFlowSimple(req);
@@ -122,10 +126,9 @@ public class FlowManagerService implements IFlowManagerService {
     @Override
     public boolean executeFlow(int flowId) throws Exception {
         Flow flow = flowMapper.selectByPrimaryKey(flowId);
-        //判断审核状态
-        if (FlowReviewType.Unreviewed.equals(flow.getIsreview()) ||
-                FlowReviewType.Unapproved.equals(flow.getIsreview())) {
-            throw new Exception("未经批准的流程");
+        //判断
+        if (!canExecute(flow)) {
+            throw new Exception("执行失败");
         }
         if (initFlowTasks(flowId) && startFlow(flowId)) {
             flow.setState(TaskState.ING.name());
@@ -137,6 +140,19 @@ public class FlowManagerService implements IFlowManagerService {
         } else {
             return false;
         }
+    }
+
+    private boolean canExecute(Flow flow) throws Exception{
+        if (FlowReviewType.Unreviewed.equals(flow.getIsreview()) ||
+                FlowReviewType.Unapproved.equals(flow.getIsreview())) {
+            throw new Exception("未经批准的流程");
+        }
+        Flow lastFlow  = getLastExeFlow(flow.getTemplateId(),flow.getProjectId());
+        Date exeDate = lastFlow.getUpdateTime();
+        if (exeDate != null &&  DateUtil.addMinutes(exeDate,flowExeDelay).after(new Date())) {
+            throw new Exception("发布过于频繁，请稍后重试");
+        }
+        return true;
     }
 
     @Override
@@ -703,7 +719,6 @@ public class FlowManagerService implements IFlowManagerService {
     public boolean reviewFlow(Integer flowId, Byte isReview) {
         Flow flow = new Flow();
         flow.setId(flowId);
-        flow.setUpdateTime(new Date());
         flow.setIsreview(isReview);
         flow.setReviewdate(new Date());
         flow.setReviewer(AuthUtils.getCurrUserName());
@@ -759,6 +774,20 @@ public class FlowManagerService implements IFlowManagerService {
         return CollectionUtils.isEmpty(flows) ? null : flows.get(0);
     }
 
+    @Override
+    public Flow getLastExeFlow(Integer templateId, Integer projectId) {
+        FlowExample example = new FlowExample();
+        FlowExample.Criteria criteria = example.createCriteria();
+        if (templateId != null) criteria.andTemplateIdEqualTo(templateId);
+        if (projectId != null) criteria.andProjectIdEqualTo(projectId);
+        example.setOrderByClause("update_time DESC");
+        example.setLimitStart(0);
+        example.setLimitEnd(1);
+        List<Flow> flows = flowMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(flows) ? null : flows.get(0);
+    }
+
+
     public static void main(String[] args) {
         /*
         String str = "i am /#p#/#p#";
@@ -777,7 +806,14 @@ public class FlowManagerService implements IFlowManagerService {
         System.out.println(String.format("sh /opt/auto/local/pullcode.sh -v %s -u %s -b %s -p", "s222", "s333", "b", "p"));
         */
 //        String[] strs = "".split(",");
-        Integer i = null;
-        System.out.println(i > 0);
+       /* Integer i = null;
+        System.out.println(i > 0);*/
+        Date exeDate = new Date();
+        Date tmpDate = DateUtil.addMinutes(exeDate,1);
+
+        System.out.println("args = [" + tmpDate.after(new Date()) + "]");
+
+
+
     }
 }
