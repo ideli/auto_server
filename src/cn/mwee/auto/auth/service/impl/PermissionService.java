@@ -124,13 +124,12 @@ public class PermissionService implements IPermissionService {
     public List<AuthMenu> getLeftMenu(Integer userId) {
         List<AuthMenu> topMenus = new ArrayList<>();
         List<AuthMenu> menus = authPermissionExtMapper.selectPrivateMenu(userId);
-        if (CollectionUtils.isEmpty(menus)) {
-            return topMenus;
-        }
-        for (AuthMenu menu : menus) {
-            if (menu.getParentId() == -1) {
-                topMenus.add(menu);
-                menu.setChildMenu(getChildMenu(menus, menu));
+        if (CollectionUtils.isNotEmpty(menus)) {
+            for (AuthMenu menu : menus) {
+                if (menu.getParentId() == -1) {
+                    topMenus.add(menu);
+                    menu.setChildMenu(getChildMenu(menus, menu));
+                }
             }
         }
         List<AuthPermission> projectList = projectService.getProjects4User(userId);
