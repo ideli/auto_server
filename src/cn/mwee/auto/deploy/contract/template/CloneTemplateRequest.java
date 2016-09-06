@@ -13,4 +13,6 @@ public class CloneTemplateRequest {
     @NotNull(message = "未指定模板")
     private Integer templateId;
 
+    private String name;
+
 }

@@ -382,18 +382,18 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public void cloneTemplate(Integer templateId) {
+    public void cloneTemplate(Integer templateId,String name) {
         AutoTemplate template = getTemplate(templateId);
         List<TemplateTask> ttList = getTemplateTasks(templateId);
         List<AutoTask> taskList = getTasks4TemplateTaskList(ttList);
-        Integer newTemplateid = cloneTemplate(template);
+        Integer newTemplateid = cloneTemplate(template,name);
         Map<Integer, Integer> taskIdMap = cloneTasks(taskList);
         cloneTemplateTasks(ttList, newTemplateid, taskIdMap);
     }
 
-    private Integer cloneTemplate(AutoTemplate template) {
+    private Integer cloneTemplate(AutoTemplate template,String newName) {
         AutoTemplate templateClone = new AutoTemplate();
-        templateClone.setName(template.getName() + "-copy");
+        templateClone.setName(StringUtils.isBlank(newName) ? template.getName() + "-copy" : newName);
         templateClone.setProjectId(template.getProjectId());
         templateClone.setVcsType(template.getVcsType());
         templateClone.setVcsRep(template.getVcsRep());
