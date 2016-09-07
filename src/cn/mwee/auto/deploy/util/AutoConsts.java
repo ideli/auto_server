@@ -75,6 +75,21 @@ public class AutoConsts {
 		public static final byte TYPE_BTN               = -1;
 	}
 
+    /** 系统日志 **/
+	public static class ChangeLog {
+        public static final byte LOG_TYPE_TASK          = 0;
+        public static final byte LOG_TYPE_TEMP          = 1;
+        public static final byte LOG_TYPE_ZONE          = 2;
+        public static final byte LOG_TYPE_TEMPTASK      = 3;
+        public static final byte LOG_TYPE_TEMPZONE      = 4;
+
+        public static final byte OPERATE_TYPE_ADD       = 1;
+        public static final byte OPERATE_TYPE_DEL       = 2;
+        public static final byte OPERATE_TYPE_UPDATE    = 3;
+
+
+    }
+
 	public enum TaskState
 	{
 		INIT,ING,MANUAL,ERROR,TIMER,SUCCESS

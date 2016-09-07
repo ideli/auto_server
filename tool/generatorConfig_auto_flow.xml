@@ -117,6 +117,7 @@
                selectByExampleQueryId="true">
             <generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
         </table>-->
+<!--
 
 		<table tableName="template_zones_monitor" domainObjectName="TemplateZonesMonitor"
 			   enableCountByExample="true"
@@ -126,7 +127,15 @@
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>
-
+-->
+		<table tableName="auto_change_log" domainObjectName="AutoChangeLog"
+			   enableCountByExample="true"
+			   enableUpdateByExample="true"
+			   enableDeleteByExample="true"
+			   enableSelectByExample="true"
+			   selectByExampleQueryId="true">
+			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
+		</table>
 
 <!-- 
 		<table tableName="zones" domainObjectName="Zone"

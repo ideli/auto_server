@@ -16,6 +16,7 @@ import cn.mwee.auto.deploy.model.*;
 
 import static cn.mwee.auto.deploy.util.AutoConsts.*;
 
+import cn.mwee.auto.deploy.service.IChangeLogService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import cn.mwee.auto.deploy.dao.AutoTaskMapper;
 import cn.mwee.auto.deploy.service.ITaskManagerService;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,9 +44,16 @@ public class TaskManagerService implements ITaskManagerService {
     @Autowired
     private TemplateTaskMapper templateTaskMapper;
 
+    @Resource
+    private IChangeLogService changeLogService;
+
     @Override
     public boolean addTask(AutoTask task) {
-        return autoTaskMapper.insertSelective(task) > 0;
+        boolean result = autoTaskMapper.insertSelective(task) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_ADD,task.getId(),task);
+        }
+        return result;
     }
 
     @Override
@@ -58,7 +67,10 @@ public class TaskManagerService implements ITaskManagerService {
         task.setId(taskId);
         task.setInuse(InUseType.NOT_USE);
         task.setUpdateTime(new Date());
-        return autoTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        boolean result =  autoTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        if (result)
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_DEL,taskId,task);
+        return result;
     }
 
     @Override
@@ -74,7 +86,10 @@ public class TaskManagerService implements ITaskManagerService {
     public boolean modifyTask(AutoTask task) {
         task.setCreateTime(null);
         task.setUpdateTime(new Date());
-        return autoTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        boolean result = autoTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        if (result)
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_UPDATE,task.getId(),task);
+        return result;
     }
 
     @Override
