@@ -382,18 +382,18 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public void cloneTemplate(Integer templateId,String name) {
+    public void cloneTemplate(Integer templateId,String suffixName) {
         AutoTemplate template = getTemplate(templateId);
         List<TemplateTask> ttList = getTemplateTasks(templateId);
         List<AutoTask> taskList = getTasks4TemplateTaskList(ttList);
-        Integer newTemplateid = cloneTemplate(template,name);
-        Map<Integer, Integer> taskIdMap = cloneTasks(taskList);
+        Integer newTemplateid = cloneTemplate(template,suffixName);
+        Map<Integer, Integer> taskIdMap = cloneTasks(taskList,suffixName);
         cloneTemplateTasks(ttList, newTemplateid, taskIdMap);
     }
 
-    private Integer cloneTemplate(AutoTemplate template,String newName) {
+    private Integer cloneTemplate(AutoTemplate template,String suffixName) {
         AutoTemplate templateClone = new AutoTemplate();
-        templateClone.setName(StringUtils.isBlank(newName) ? template.getName() + "-copy" : newName);
+        templateClone.setName(template.getName() + "-" + (StringUtils.isBlank(suffixName) ? "copy" : suffixName));
         templateClone.setProjectId(template.getProjectId());
         templateClone.setVcsType(template.getVcsType());
         templateClone.setVcsRep(template.getVcsRep());
@@ -404,12 +404,12 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
 
-    private Map<Integer, Integer> cloneTasks(List<AutoTask> taskList) {
+    private Map<Integer, Integer> cloneTasks(List<AutoTask> taskList, String suffixName) {
         Map<Integer, Integer> taskIdMap = new HashMap<>();
         if (CollectionUtils.isEmpty(taskList)) return taskIdMap;
         taskList.forEach(autoTask -> {
             AutoTask autoTaskClone = new AutoTask();
-            autoTaskClone.setName(autoTask.getName() + "-copy");
+            autoTaskClone.setName(autoTask.getName() + "-" + (StringUtils.isBlank(suffixName) ? "copy" : suffixName));
             autoTaskClone.setExec(autoTask.getExec());
             autoTaskClone.setExecUser(autoTask.getExecUser());
             autoTaskClone.setExecZone(autoTask.getExecZone());
