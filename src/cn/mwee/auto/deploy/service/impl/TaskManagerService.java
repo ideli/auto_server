@@ -102,26 +102,30 @@ public class TaskManagerService implements ITaskManagerService {
             String taskName = req.getName();
 
 
-            if (StringUtils.isNotBlank(taskName)) {
+            if (StringUtils.isNotBlank(taskName))
+            {
                 c.andNameLike("%".concat(taskName).concat("%"));
             }
 
             String desc = req.getDesc();
 
-            if (StringUtils.isNotBlank(desc)) {
-                c.andDescEqualTo(desc);
+            if (StringUtils.isNotBlank(desc))
+            {
+                c.andDescLike("%".concat(desc).concat("%"));
             }
 
             String exec = req.getExec();
 
-            if (StringUtils.isNotBlank(exec)) {
-                c.andExecEqualTo(exec);
+            if (StringUtils.isNotBlank(exec))
+            {
+                c.andExecLike("%".concat(exec).concat("%"));
             }
 
             String params = req.getParams();
 
-            if (StringUtils.isNotBlank(params)) {
-                c.andParamsEqualTo(params);
+            if (StringUtils.isNotBlank(params))
+            {
+                c.andParamsLike("%".concat(params).concat("%"));
             }
         }
 
