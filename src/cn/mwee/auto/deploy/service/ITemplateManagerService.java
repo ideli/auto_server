@@ -100,7 +100,7 @@ public interface ITemplateManagerService {
     /**
      * 克隆模板
      */
-    void cloneTemplate(Integer templateId,String name);
+    void cloneTemplate(Integer templateId,String name,Integer cloneType);
 
     /**
      * 更新模板区域状态

@@ -382,27 +382,51 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public void cloneTemplate(Integer templateId,String suffixName) {
+    public void cloneTemplate(Integer templateId,String suffixName,Integer cloneType) {
         AutoTemplate template = getTemplate(templateId);
         List<TemplateTask> ttList = getTemplateTasks(templateId);
-        List<AutoTask> taskList = getTasks4TemplateTaskList(ttList);
-        Integer newTemplateid = cloneTemplate(template,suffixName);
-        Map<Integer, Integer> taskIdMap = cloneTasks(taskList,suffixName);
-        cloneTemplateTasks(ttList, newTemplateid, taskIdMap);
+        /**复制基本信息**/
+        Integer newTemplateId = cloneTemplate(template,suffixName,0,cloneType);
+        /**clone任务信息**/
+        cloneTemplateTaskInfo(ttList,newTemplateId,suffixName,cloneType);
+
+        /**克隆回滚模板**/
+        AutoTemplate rollBackTemplate = getSubTemplate(templateId);
+        if (rollBackTemplate != null) {
+            String rollBackTemplateName = cloneType == 2 ? suffixName : ("回滚-"+suffixName);
+            /**复制基本信息**/
+            Integer newRollBackTemplateId = cloneTemplate(rollBackTemplate,rollBackTemplateName, newTemplateId ,cloneType);
+            List<TemplateTask> rollBackTtList = getTemplateTasks(rollBackTemplate.getId());
+            /**clone任务信息**/
+            cloneTemplateTaskInfo(rollBackTtList,newRollBackTemplateId,suffixName,cloneType);
+        }
     }
 
-    private Integer cloneTemplate(AutoTemplate template,String suffixName) {
+    private void cloneTemplateTaskInfo(List<TemplateTask> ttList , Integer newTemplateId, String suffixName , Integer cloneType ) {
+        if (CollectionUtils.isNotEmpty(ttList)) {
+            if (cloneType == 2){
+                List<AutoTask> taskList = getTasks4TemplateTaskList(ttList);
+                Map<Integer, Integer> taskIdMap = cloneTasks(taskList,suffixName);
+                cloneTemplateTasks(ttList, newTemplateId, taskIdMap,cloneType);
+            } else {
+                cloneTemplateTasks(ttList, newTemplateId, null,cloneType);
+            }
+        }
+    }
+
+    private Integer cloneTemplate(AutoTemplate template,String templateName,Integer pId,Integer cloneType) {
         AutoTemplate templateClone = new AutoTemplate();
-        templateClone.setName(template.getName() + "-" + (StringUtils.isBlank(suffixName) ? "copy" : suffixName));
+        String newTemplateName = (cloneType == 1 ? templateName : (template.getName() + "-"+templateName));
+        templateClone.setName(newTemplateName);
         templateClone.setProjectId(template.getProjectId());
         templateClone.setVcsType(template.getVcsType());
         templateClone.setVcsRep(template.getVcsRep());
         templateClone.setReview(template.getReview());
+        templateClone.setPid(pId);
         templateClone.setCreator(AuthUtils.getCurrUserName());
         addTemplate(templateClone);
         return templateClone.getId();
     }
-
 
     private Map<Integer, Integer> cloneTasks(List<AutoTask> taskList, String suffixName) {
         Map<Integer, Integer> taskIdMap = new HashMap<>();
@@ -422,20 +446,23 @@ public class TemplateManagerService implements ITemplateManagerService {
         return taskIdMap;
     }
 
-    private void cloneTemplateTasks(List<TemplateTask> ttList, Integer newTemplateId, Map<Integer, Integer> taskIdMap) {
+    private void cloneTemplateTasks(List<TemplateTask> ttList, Integer newTemplateId, Map<Integer, Integer> taskIdMap,Integer cloneType) {
         if (CollectionUtils.isEmpty(ttList)) return;
         ttList.forEach(templateTask -> {
             TemplateTask templateTaskClone = new TemplateTask();
             templateTaskClone.setTemplateId(newTemplateId);
             templateTaskClone.setGroup(templateTask.getGroup());
             templateTaskClone.setPriority(templateTask.getPriority());
-            templateTaskClone.setTaskId(taskIdMap.get(templateTask.getTaskId()));
+            if (cloneType == 2) {
+                templateTaskClone.setTaskId(taskIdMap.get(templateTask.getTaskId()));
+            } else {
+                templateTaskClone.setTaskId(templateTask.getTaskId());
+            }
             templateTaskClone.setTaskType(templateTask.getTaskType());
             templateTaskClone.setCreator(AuthUtils.getCurrUserName());
             addTask2Template(newTemplateId, templateTaskClone);
         });
     }
-
 
     @Override
     public boolean updateTemplateZoneStatus(Integer templateZoneId, String state) {

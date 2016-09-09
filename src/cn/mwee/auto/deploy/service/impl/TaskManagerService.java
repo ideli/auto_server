@@ -168,12 +168,12 @@ public class TaskManagerService implements ITaskManagerService {
         String likeParam = SqlUtils.wrapLike(param);
         AutoTaskExample example = new AutoTaskExample();
         if (StringUtils.isNumeric(param)){
-            example.createCriteria().andIdEqualTo(new Integer(param));
+            example.createCriteria().andIdEqualTo(new Integer(param)).andInuseEqualTo(InUseType.IN_USE);
         }
-        example.or(example.createCriteria().andNameLike(likeParam));
-        example.or(example.createCriteria().andDescLike(likeParam));
-        example.or(example.createCriteria().andExecLike(likeParam));
-        example.or(example.createCriteria().andParamsLike(likeParam));
+        example.or(example.createCriteria().andNameLike(likeParam).andInuseEqualTo(InUseType.IN_USE));
+        example.or(example.createCriteria().andDescLike(likeParam).andInuseEqualTo(InUseType.IN_USE));
+        example.or(example.createCriteria().andExecLike(likeParam).andInuseEqualTo(InUseType.IN_USE));
+        example.or(example.createCriteria().andParamsLike(likeParam).andInuseEqualTo(InUseType.IN_USE));
         List<AutoTask> list = autoTaskMapper.selectByExample(example);
         List<Model4Sel> result = new ArrayList<>(list.size());
         list.forEach(autoTask -> {

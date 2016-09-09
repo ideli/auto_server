@@ -16,6 +16,13 @@ public class CloneTemplateRequest {
     /**
      * 克隆后后缀
      */
-    private String suffixName;
+    @NotNull(message = "未指定模板名称")
+    private String templateName;
+
+    /**
+     * 克隆后后缀
+     */
+    @NotNull(message = "未指定模板克隆模式")
+    private Integer cloneType;
 
 }
