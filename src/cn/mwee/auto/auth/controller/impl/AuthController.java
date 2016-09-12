@@ -90,17 +90,9 @@ public class AuthController implements IAuthController {
     }
 
     @Override
-    @Contract(LoginResp.class)
+    @Contract(BaseContract.class)
     public NormalReturn check(ServiceRequest request) {
-        int result = -1;
-        try {
-            LoginResp req = request.getContract();
-            Session session = SecurityUtils.getSecurityManager().getSession(new DefaultSessionKey(req.getToken()));
-            result = session == null ? -1 : 1;
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-        return new NormalReturn("200", "ok", result);
+        return new NormalReturn();
     }
 
 

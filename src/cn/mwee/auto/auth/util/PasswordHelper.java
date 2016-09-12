@@ -94,7 +94,7 @@ public class PasswordHelper {
     }
 
     public static void main(String[] args) {
-        System.out.println(new PasswordHelper().encryptPassword("58e560e74d44896f4f995c605b0fc72b","paidui"));
+        System.out.println(new PasswordHelper().encryptPassword("cfcbe758b8fab1e2681f9c7ab3f7a742","order123"));
 //        new PasswordHelper().encryptPassword("0eb53519f55763f8391a84db0489e11f","123456");
     }
 }

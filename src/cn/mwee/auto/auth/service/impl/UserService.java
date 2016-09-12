@@ -191,6 +191,8 @@ public class UserService implements IUserService {
         criteria.andStatusEqualTo(true);
         if (StringUtils.isNotBlank(userQueryContract.getUserName()))
             criteria.andUsernameLike(SqlUtils.wrapLike(userQueryContract.getUserName()));
+
+		example.setOrderByClause("id desc");
         return BaseModel.selectByPage(authUserMapper,example
                 ,userQueryContract.getPage(),userQueryContract.getPage()==null);
 	}

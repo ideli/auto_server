@@ -78,7 +78,7 @@ public class AuthManager {
 			if (e instanceof UnauthenticatedException) {
 				return new NormalReturn("502",e.getMessage(),"noLogin");
 			} else if (e instanceof UnauthorizedException) {
-				return new NormalReturn("502",e.getMessage(),"noPermission");
+				return new NormalReturn("505",e.getMessage(),"noPermission");
 			} else {
 				throw e;
 			}
