@@ -491,73 +491,143 @@ public class AutoChangeLogExample {
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonIsNull() {
-            addCriterion("change_json is null");
+        public Criteria andChangeBeforeJsonIsNull() {
+            addCriterion("change_before_json is null");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonIsNotNull() {
-            addCriterion("change_json is not null");
+        public Criteria andChangeBeforeJsonIsNotNull() {
+            addCriterion("change_before_json is not null");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonEqualTo(String value) {
-            addCriterion("change_json =", value, "changeJson");
+        public Criteria andChangeBeforeJsonEqualTo(String value) {
+            addCriterion("change_before_json =", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonNotEqualTo(String value) {
-            addCriterion("change_json <>", value, "changeJson");
+        public Criteria andChangeBeforeJsonNotEqualTo(String value) {
+            addCriterion("change_before_json <>", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonGreaterThan(String value) {
-            addCriterion("change_json >", value, "changeJson");
+        public Criteria andChangeBeforeJsonGreaterThan(String value) {
+            addCriterion("change_before_json >", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonGreaterThanOrEqualTo(String value) {
-            addCriterion("change_json >=", value, "changeJson");
+        public Criteria andChangeBeforeJsonGreaterThanOrEqualTo(String value) {
+            addCriterion("change_before_json >=", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonLessThan(String value) {
-            addCriterion("change_json <", value, "changeJson");
+        public Criteria andChangeBeforeJsonLessThan(String value) {
+            addCriterion("change_before_json <", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonLessThanOrEqualTo(String value) {
-            addCriterion("change_json <=", value, "changeJson");
+        public Criteria andChangeBeforeJsonLessThanOrEqualTo(String value) {
+            addCriterion("change_before_json <=", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonLike(String value) {
-            addCriterion("change_json like", value, "changeJson");
+        public Criteria andChangeBeforeJsonLike(String value) {
+            addCriterion("change_before_json like", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonNotLike(String value) {
-            addCriterion("change_json not like", value, "changeJson");
+        public Criteria andChangeBeforeJsonNotLike(String value) {
+            addCriterion("change_before_json not like", value, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonIn(List<String> values) {
-            addCriterion("change_json in", values, "changeJson");
+        public Criteria andChangeBeforeJsonIn(List<String> values) {
+            addCriterion("change_before_json in", values, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonNotIn(List<String> values) {
-            addCriterion("change_json not in", values, "changeJson");
+        public Criteria andChangeBeforeJsonNotIn(List<String> values) {
+            addCriterion("change_before_json not in", values, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonBetween(String value1, String value2) {
-            addCriterion("change_json between", value1, value2, "changeJson");
+        public Criteria andChangeBeforeJsonBetween(String value1, String value2) {
+            addCriterion("change_before_json between", value1, value2, "changeBeforeJson");
             return (Criteria) this;
         }
 
-        public Criteria andChangeJsonNotBetween(String value1, String value2) {
-            addCriterion("change_json not between", value1, value2, "changeJson");
+        public Criteria andChangeBeforeJsonNotBetween(String value1, String value2) {
+            addCriterion("change_before_json not between", value1, value2, "changeBeforeJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonIsNull() {
+            addCriterion("change_after_json is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonIsNotNull() {
+            addCriterion("change_after_json is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonEqualTo(String value) {
+            addCriterion("change_after_json =", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonNotEqualTo(String value) {
+            addCriterion("change_after_json <>", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonGreaterThan(String value) {
+            addCriterion("change_after_json >", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonGreaterThanOrEqualTo(String value) {
+            addCriterion("change_after_json >=", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonLessThan(String value) {
+            addCriterion("change_after_json <", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonLessThanOrEqualTo(String value) {
+            addCriterion("change_after_json <=", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonLike(String value) {
+            addCriterion("change_after_json like", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonNotLike(String value) {
+            addCriterion("change_after_json not like", value, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonIn(List<String> values) {
+            addCriterion("change_after_json in", values, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonNotIn(List<String> values) {
+            addCriterion("change_after_json not in", values, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonBetween(String value1, String value2) {
+            addCriterion("change_after_json between", value1, value2, "changeAfterJson");
+            return (Criteria) this;
+        }
+
+        public Criteria andChangeAfterJsonNotBetween(String value1, String value2) {
+            addCriterion("change_after_json not between", value1, value2, "changeAfterJson");
             return (Criteria) this;
         }
 

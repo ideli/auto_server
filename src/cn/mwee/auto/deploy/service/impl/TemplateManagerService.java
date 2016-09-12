@@ -93,7 +93,7 @@ public class TemplateManagerService implements ITemplateManagerService {
         template.setCreator(AuthUtils.getCurrUserName());
         boolean result = autoTemplateMapper.insertSelective(template) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_ADD,template.getId(),template);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP, ChangeLog.OPERATE_TYPE_ADD, template.getId(), null, template);
         }
         return result;
     }
@@ -105,9 +105,10 @@ public class TemplateManagerService implements ITemplateManagerService {
         template.setId(templateId);
         template.setInuse(InUseType.NOT_USE);
         template.setOperater(AuthUtils.getCurrUserName());
-        boolean result =  autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
+        AutoTemplate changeBefore = autoTemplateMapper.selectByPrimaryKey(templateId);
+        boolean result = autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_DEL,template.getId(),template);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP, ChangeLog.OPERATE_TYPE_DEL, template.getId(), changeBefore, template);
         }
         return result;
     }
@@ -116,9 +117,10 @@ public class TemplateManagerService implements ITemplateManagerService {
     public boolean modifyTemplate(AutoTemplate template) {
         template.setUpdateTime(new Date());
         template.setOperater(AuthUtils.getCurrUserName());
+        AutoTemplate changeBefore = autoTemplateMapper.selectByPrimaryKey(template.getId());
         boolean result = autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_UPDATE,template.getId(),template);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP, ChangeLog.OPERATE_TYPE_UPDATE, template.getId(), changeBefore, template);
         }
         return result;
     }
@@ -130,7 +132,7 @@ public class TemplateManagerService implements ITemplateManagerService {
         task.setCreator(AuthUtils.getCurrUserName());
         boolean result = templateTaskMapper.insertSelective(task) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK,ChangeLog.OPERATE_TYPE_ADD,task.getId(),task);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK, ChangeLog.OPERATE_TYPE_ADD, task.getId(), null, task);
         }
         return result;
     }
@@ -141,9 +143,10 @@ public class TemplateManagerService implements ITemplateManagerService {
         task.setInuse(InUseType.NOT_USE);
         task.setId(templateTaskId);
         task.setOperater(AuthUtils.getCurrUserName());
+        TemplateTask changeBefore = templateTaskMapper.selectByPrimaryKey(templateTaskId);
         boolean result = templateTaskMapper.updateByPrimaryKeySelective(task) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK,ChangeLog.OPERATE_TYPE_DEL,task.getId(),task);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK, ChangeLog.OPERATE_TYPE_DEL, task.getId(), changeBefore, task);
         }
         return result;
     }
@@ -153,9 +156,10 @@ public class TemplateManagerService implements ITemplateManagerService {
         task.setCreateTime(null);
         task.setUpdateTime(new Date());
         task.setOperater(AuthUtils.getCurrUserName());
+        TemplateTask changeBefore = templateTaskMapper.selectByPrimaryKey(task.getId());
         boolean result = templateTaskMapper.updateByPrimaryKeySelective(task) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK,ChangeLog.OPERATE_TYPE_UPDATE,task.getId(),task);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK, ChangeLog.OPERATE_TYPE_UPDATE, task.getId(), changeBefore, task);
         }
         return result;
     }
@@ -176,8 +180,7 @@ public class TemplateManagerService implements ITemplateManagerService {
 
             Date end = DateUtil.parseDate(req.getCreateTimeE());
 
-            if(req.getProjectId() != null)
-            {
+            if (req.getProjectId() != null) {
                 c.andProjectIdEqualTo(req.getProjectId());
             }
 
@@ -212,25 +215,22 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public boolean addTask2RollbackTemplate(int templateId, TemplateTask task)
-    {
+    public boolean addTask2RollbackTemplate(int templateId, TemplateTask task) {
         AutoTemplate rollbackTemplate = getSubTemplate(templateId);
 
-        if(rollbackTemplate == null)
-        {
+        if (rollbackTemplate == null) {
             rollbackTemplate = createSubTemplate(templateId);
         }
 
         int rollbackId = rollbackTemplate.getId();
 
-        task.setGroup((byte)1);
+        task.setGroup((byte) 1);
 
-        return addTask2Template(rollbackId,task);
+        return addTask2Template(rollbackId, task);
     }
 
     @Override
-    public AutoTemplate getSubTemplate(int templateId)
-    {
+    public AutoTemplate getSubTemplate(int templateId) {
         // 判断是否已有子模板
         AutoTemplateExample example = new AutoTemplateExample();
         AutoTemplateExample.Criteria c = example.createCriteria();
@@ -243,8 +243,7 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public AutoTemplate createSubTemplate(int templateId)
-    {
+    public AutoTemplate createSubTemplate(int templateId) {
         AutoTemplate autoTemplate = getTemplate(templateId);
 
         AutoTemplate rollbackTemplate = new AutoTemplate();
@@ -261,7 +260,7 @@ public class TemplateManagerService implements ITemplateManagerService {
 
         autoTemplateMapper.insertSelective(rollbackTemplate);
 
-        changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_ADD,rollbackTemplate.getId(),rollbackTemplate);
+        changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP, ChangeLog.OPERATE_TYPE_ADD, rollbackTemplate.getId(),null, rollbackTemplate);
 
         return rollbackTemplate;
     }
@@ -278,12 +277,10 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public List<TemplateTask> getRollbackTemplateTasks(int templateId)
-    {
+    public List<TemplateTask> getRollbackTemplateTasks(int templateId) {
         AutoTemplate rollbackTemplate = getSubTemplate(templateId);
 
-        if(rollbackTemplate == null)
-        {
+        if (rollbackTemplate == null) {
             return Lists.newArrayList();
         }
 
@@ -387,7 +384,7 @@ public class TemplateManagerService implements ITemplateManagerService {
         templateZone.setCreateTime(new Date());
         boolean result = templateZoneMapper.insertSelective(templateZone) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPZONE,ChangeLog.OPERATE_TYPE_ADD,templateZone.getId(),templateZone);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPZONE, ChangeLog.OPERATE_TYPE_ADD, templateZone.getId(),null, templateZone);
         }
         return result;
     }
@@ -398,12 +395,14 @@ public class TemplateManagerService implements ITemplateManagerService {
         TemplateZoneExample.Criteria c = example.createCriteria();
         c.andTemplateIdEqualTo(templateId);
         c.andZoneIdEqualTo(zoneId);
-        boolean result =  templateZoneMapper.deleteByExample(example) > 0;
+        List<TemplateZone>  templateZones =templateZoneMapper.selectByExample(example);
+        TemplateZone changeBefore = CollectionUtils.isEmpty(templateZones) ? null:templateZones.get(0);
+        boolean result = templateZoneMapper.deleteByExample(example) > 0;
         if (result) {
-            Map<String,Object> data = new HashMap<>();
-            data.put("templateId",templateId);
-            data.put("zoneId",zoneId);
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPZONE,ChangeLog.OPERATE_TYPE_DEL,0,data);
+            Map<String, Object> data = new HashMap<>();
+            data.put("templateId", templateId);
+            data.put("zoneId", zoneId);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPZONE, ChangeLog.OPERATE_TYPE_DEL, changeBefore.getId(),changeBefore, data);
         }
         return result;
     }
@@ -424,41 +423,41 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public void cloneTemplate(Integer templateId,String suffixName,Integer cloneType) {
+    public void cloneTemplate(Integer templateId, String suffixName, Integer cloneType) {
         AutoTemplate template = getTemplate(templateId);
         List<TemplateTask> ttList = getTemplateTasks(templateId);
         /**复制基本信息**/
-        Integer newTemplateId = cloneTemplate(template,suffixName,0,cloneType);
+        Integer newTemplateId = cloneTemplate(template, suffixName, 0, cloneType);
         /**clone任务信息**/
-        cloneTemplateTaskInfo(ttList,newTemplateId,suffixName,cloneType);
+        cloneTemplateTaskInfo(ttList, newTemplateId, suffixName, cloneType);
 
         /**克隆回滚模板**/
         AutoTemplate rollBackTemplate = getSubTemplate(templateId);
         if (rollBackTemplate != null) {
-            String rollBackTemplateName = cloneType == 2 ? suffixName : ("回滚-"+suffixName);
+            String rollBackTemplateName = cloneType == 2 ? suffixName : ("回滚-" + suffixName);
             /**复制基本信息**/
-            Integer newRollBackTemplateId = cloneTemplate(rollBackTemplate,rollBackTemplateName, newTemplateId ,cloneType);
+            Integer newRollBackTemplateId = cloneTemplate(rollBackTemplate, rollBackTemplateName, newTemplateId, cloneType);
             List<TemplateTask> rollBackTtList = getTemplateTasks(rollBackTemplate.getId());
             /**clone任务信息**/
-            cloneTemplateTaskInfo(rollBackTtList,newRollBackTemplateId,suffixName,cloneType);
+            cloneTemplateTaskInfo(rollBackTtList, newRollBackTemplateId, suffixName, cloneType);
         }
     }
 
-    private void cloneTemplateTaskInfo(List<TemplateTask> ttList , Integer newTemplateId, String suffixName , Integer cloneType ) {
+    private void cloneTemplateTaskInfo(List<TemplateTask> ttList, Integer newTemplateId, String suffixName, Integer cloneType) {
         if (CollectionUtils.isNotEmpty(ttList)) {
-            if (cloneType == 2){
+            if (cloneType == 2) {
                 List<AutoTask> taskList = getTasks4TemplateTaskList(ttList);
-                Map<Integer, Integer> taskIdMap = cloneTasks(taskList,suffixName);
-                cloneTemplateTasks(ttList, newTemplateId, taskIdMap,cloneType);
+                Map<Integer, Integer> taskIdMap = cloneTasks(taskList, suffixName);
+                cloneTemplateTasks(ttList, newTemplateId, taskIdMap, cloneType);
             } else {
-                cloneTemplateTasks(ttList, newTemplateId, null,cloneType);
+                cloneTemplateTasks(ttList, newTemplateId, null, cloneType);
             }
         }
     }
 
-    private Integer cloneTemplate(AutoTemplate template,String templateName,Integer pId,Integer cloneType) {
+    private Integer cloneTemplate(AutoTemplate template, String templateName, Integer pId, Integer cloneType) {
         AutoTemplate templateClone = new AutoTemplate();
-        String newTemplateName = (cloneType == 1 ? templateName : (template.getName() + "-"+templateName));
+        String newTemplateName = (cloneType == 1 ? templateName : (template.getName() + "-" + templateName));
         templateClone.setName(newTemplateName);
         templateClone.setProjectId(template.getProjectId());
         templateClone.setVcsType(template.getVcsType());
@@ -488,7 +487,7 @@ public class TemplateManagerService implements ITemplateManagerService {
         return taskIdMap;
     }
 
-    private void cloneTemplateTasks(List<TemplateTask> ttList, Integer newTemplateId, Map<Integer, Integer> taskIdMap,Integer cloneType) {
+    private void cloneTemplateTasks(List<TemplateTask> ttList, Integer newTemplateId, Map<Integer, Integer> taskIdMap, Integer cloneType) {
         if (CollectionUtils.isEmpty(ttList)) return;
         ttList.forEach(templateTask -> {
             TemplateTask templateTaskClone = new TemplateTask();
@@ -547,7 +546,7 @@ public class TemplateManagerService implements ITemplateManagerService {
         monitor.setTemplateid(templateId);
         monitor.setMonitorshell(defaultMonitorShell);
         monitor.setMonitoruser(defaultMonitorUser);
-        monitor.setMonitorreq(buildMonitorReq(monitorType,monitorParam));
+        monitor.setMonitorreq(buildMonitorReq(monitorType, monitorParam));
         monitor.setInuse(inUse);
         monitor.setMonitortype(monitorType);
         monitor.setMonitorparam(monitorParam);
@@ -558,27 +557,27 @@ public class TemplateManagerService implements ITemplateManagerService {
     @Override
     public boolean updateTemplateZoneMonitor(Integer templateId, Byte monitorType, String monitorParam, Byte inUse) {
         TemplateZonesMonitor monitor = new TemplateZonesMonitor();
-        monitor.setMonitorreq(buildMonitorReq(monitorType,monitorParam));
+        monitor.setMonitorreq(buildMonitorReq(monitorType, monitorParam));
         monitor.setInuse(inUse);
         monitor.setMonitortype(monitorType);
         monitor.setMonitorparam(monitorParam);
         monitor.setUpdatetime(new Date());
         TemplateZonesMonitorExample example = new TemplateZonesMonitorExample();
         example.createCriteria().andTemplateidEqualTo(templateId);
-        return templateZonesMonitorMapper.updateByExampleSelective(monitor,example) > 0;
+        return templateZonesMonitorMapper.updateByExampleSelective(monitor, example) > 0;
     }
 
     private String buildMonitorReq(Byte monitorType, String param) {
         String monitorReq = "";
         switch (monitorType) {
             case MonitorType.MONITOR_URL:
-                monitorReq = "-a %zone% -u "+param;
+                monitorReq = "-a %zone% -u " + param;
                 break;
             case MonitorType.MONITOR_PORT:
-                monitorReq = "-a %zone% -p "+param;
+                monitorReq = "-a %zone% -p " + param;
                 break;
             case MonitorType.MONITOR_PROCESS:
-                monitorReq = "-a %zone% -n "+param;
+                monitorReq = "-a %zone% -n " + param;
         }
         return monitorReq;
     }

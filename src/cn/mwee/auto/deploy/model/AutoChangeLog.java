@@ -35,12 +35,20 @@ public class AutoChangeLog {
     private Integer dataId;
 
     /**
-     * 变动数据json表示
-     * auto_change_log.change_json
+     * 变动前数据json表示
+     * auto_change_log.change_before_json
      *
      * @mbggenerated
      */
-    private String changeJson;
+    private String changeBeforeJson;
+
+    /**
+     * 变动后数据json表示
+     * auto_change_log.change_after_json
+     *
+     * @mbggenerated
+     */
+    private String changeAfterJson;
 
     /**
      * 操作时间
@@ -153,27 +161,51 @@ public class AutoChangeLog {
     }
 
     /**
-     * 变动数据json表示
-     * This method returns the value of the database column auto_change_log.change_json
+     * 变动前数据json表示
+     * This method returns the value of the database column auto_change_log.change_before_json
      *
-     * @return the value of auto_change_log.change_json
+     * @return the value of auto_change_log.change_before_json
      *
      * @mbggenerated
      */
-    public String getChangeJson() {
-        return changeJson;
+    public String getChangeBeforeJson() {
+        return changeBeforeJson;
     }
 
     /**
-     * 变动数据json表示
-     * This method sets the value of the database column auto_change_log.change_json
+     * 变动前数据json表示
+     * This method sets the value of the database column auto_change_log.change_before_json
      *
-     * @param changeJson the value for auto_change_log.change_json
+     * @param changeBeforeJson the value for auto_change_log.change_before_json
      *
      * @mbggenerated
      */
-    public void setChangeJson(String changeJson) {
-        this.changeJson = changeJson;
+    public void setChangeBeforeJson(String changeBeforeJson) {
+        this.changeBeforeJson = changeBeforeJson;
+    }
+
+    /**
+     * 变动后数据json表示
+     * This method returns the value of the database column auto_change_log.change_after_json
+     *
+     * @return the value of auto_change_log.change_after_json
+     *
+     * @mbggenerated
+     */
+    public String getChangeAfterJson() {
+        return changeAfterJson;
+    }
+
+    /**
+     * 变动后数据json表示
+     * This method sets the value of the database column auto_change_log.change_after_json
+     *
+     * @param changeAfterJson the value for auto_change_log.change_after_json
+     *
+     * @mbggenerated
+     */
+    public void setChangeAfterJson(String changeAfterJson) {
+        this.changeAfterJson = changeAfterJson;
     }
 
     /**

@@ -26,7 +26,7 @@ public class ChangeLogService implements IChangeLogService {
     private AutoChangeLogMapper autoChangeLogMapper;
 
     @Override
-    public void addChangeLogAsyn(Byte logType, Byte operateType, Integer dataId, Object changeData) {
+    public void addChangeLogAsyn(Byte logType, Byte operateType, Integer dataId, Object changeBeforeData,Object changeAfterData) {
         String currentUserName = AuthUtils.getCurrUserName();
         String finalCurrentUserName = StringUtils.isBlank(currentUserName) ? "system" : currentUserName;
         simpleExecutor.execute(() -> {
@@ -34,7 +34,8 @@ public class ChangeLogService implements IChangeLogService {
             record.setLogType(logType);
             record.setOperateType(operateType);
             record.setDataId(dataId);
-            record.setChangeJson(JSON.toJSONString(changeData));
+            record.setChangeBeforeJson(changeBeforeData == null ? null : JSON.toJSONString(changeBeforeData));
+            record.setChangeAfterJson(changeAfterData == null ? null : JSON.toJSONString(changeAfterData));
             record.setOperator(finalCurrentUserName);
             record.setCreateTime(new Date());
             autoChangeLogMapper.insert(record);

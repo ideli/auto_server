@@ -51,7 +51,7 @@ public class TaskManagerService implements ITaskManagerService {
     public boolean addTask(AutoTask task) {
         boolean result = autoTaskMapper.insertSelective(task) > 0;
         if (result) {
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_ADD,task.getId(),task);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_ADD,task.getId(),null,task);
         }
         return result;
     }
@@ -67,9 +67,12 @@ public class TaskManagerService implements ITaskManagerService {
         task.setId(taskId);
         task.setInuse(InUseType.NOT_USE);
         task.setUpdateTime(new Date());
+        AutoTask changeBefore = autoTaskMapper.selectByPrimaryKey(taskId);
         boolean result =  autoTaskMapper.updateByPrimaryKeySelective(task) > 0;
-        if (result)
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_DEL,taskId,task);
+        /** 日志 **/
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK, ChangeLog.OPERATE_TYPE_DEL, taskId, changeBefore, task);
+        }
         return result;
     }
 
@@ -86,9 +89,10 @@ public class TaskManagerService implements ITaskManagerService {
     public boolean modifyTask(AutoTask task) {
         task.setCreateTime(null);
         task.setUpdateTime(new Date());
+        AutoTask changeBefore = autoTaskMapper.selectByPrimaryKey(task.getId());
         boolean result = autoTaskMapper.updateByPrimaryKeySelective(task) > 0;
         if (result)
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_UPDATE,task.getId(),task);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TASK,ChangeLog.OPERATE_TYPE_UPDATE,task.getId(),changeBefore,task);
         return result;
     }
 
@@ -156,7 +160,7 @@ public class TaskManagerService implements ITaskManagerService {
     @Override
     public List<AutoTask> getAutoTasksByIds(Set<Integer> ids) {
         if (CollectionUtils.isEmpty(ids)) return new ArrayList<>();
-        List idList = new ArrayList(ids);
+        List<Integer> idList = new ArrayList(ids);
         AutoTaskExample example = new AutoTaskExample();
         example.createCriteria().andIdIn(idList);
         return autoTaskMapper.selectByExample(example);
