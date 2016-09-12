@@ -10,6 +10,7 @@ import cn.mwee.auto.deploy.contract.commom.BaseContract;
 import cn.mwee.auto.misc.aspect.contract.Contract;
 import cn.mwee.auto.misc.req.ServiceRequest;
 import cn.mwee.auto.misc.resp.NormalReturn;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -45,7 +46,7 @@ public class UserController implements IUserController {
         try {
             AuthUser authUser = new AuthUser();
             authUser.setUsername(req.getUserName());
-            authUser.setPassword(defaultPassword);
+            authUser.setPassword(StringUtils.isEmpty(req.getPassword()) ? defaultPassword : req.getPassword());
             authUser.setName(req.getName());
             authUser.setEmail(req.getEmail());
             authUser.setPhoneno(req.getPhoneNo());

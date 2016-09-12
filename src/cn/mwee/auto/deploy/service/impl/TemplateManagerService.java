@@ -20,6 +20,7 @@ import cn.mwee.auto.deploy.model.*;
 
 import static cn.mwee.auto.deploy.util.AutoConsts.*;
 
+import cn.mwee.auto.deploy.service.IChangeLogService;
 import cn.mwee.auto.deploy.service.ITaskManagerService;
 import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -35,6 +36,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import cn.mwee.auto.deploy.contract.template.TemplateTaskContract;
 import cn.mwee.auto.deploy.service.ITemplateManagerService;
+
+import javax.annotation.Resource;
 
 /**
  * @author mengfanyuan
@@ -64,6 +67,9 @@ public class TemplateManagerService implements ITemplateManagerService {
     @Autowired
     private TemplateZonesMonitorMapper templateZonesMonitorMapper;
 
+    @Resource
+    private IChangeLogService changeLogService;
+
     @Value(value = "${git.username}")
     private String gitUserName;
 
@@ -85,7 +91,11 @@ public class TemplateManagerService implements ITemplateManagerService {
     public boolean addTemplate(AutoTemplate template) {
         template.setCreateTime(new Date());
         template.setCreator(AuthUtils.getCurrUserName());
-        return autoTemplateMapper.insertSelective(template) > 0;
+        boolean result = autoTemplateMapper.insertSelective(template) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_ADD,template.getId(),template);
+        }
+        return result;
     }
 
     @Override
@@ -95,14 +105,22 @@ public class TemplateManagerService implements ITemplateManagerService {
         template.setId(templateId);
         template.setInuse(InUseType.NOT_USE);
         template.setOperater(AuthUtils.getCurrUserName());
-        return autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
+        boolean result =  autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_DEL,template.getId(),template);
+        }
+        return result;
     }
 
     @Override
     public boolean modifyTemplate(AutoTemplate template) {
         template.setUpdateTime(new Date());
         template.setOperater(AuthUtils.getCurrUserName());
-        return autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
+        boolean result = autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_UPDATE,template.getId(),template);
+        }
+        return result;
     }
 
     @Override
@@ -110,7 +128,11 @@ public class TemplateManagerService implements ITemplateManagerService {
         task.setTemplateId(templateId);
         task.setCreateTime(new Date());
         task.setCreator(AuthUtils.getCurrUserName());
-        return templateTaskMapper.insertSelective(task) > 0;
+        boolean result = templateTaskMapper.insertSelective(task) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK,ChangeLog.OPERATE_TYPE_ADD,task.getId(),task);
+        }
+        return result;
     }
 
     @Override
@@ -119,7 +141,11 @@ public class TemplateManagerService implements ITemplateManagerService {
         task.setInuse(InUseType.NOT_USE);
         task.setId(templateTaskId);
         task.setOperater(AuthUtils.getCurrUserName());
-        return templateTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        boolean result = templateTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK,ChangeLog.OPERATE_TYPE_DEL,task.getId(),task);
+        }
+        return result;
     }
 
     @Override
@@ -127,7 +153,11 @@ public class TemplateManagerService implements ITemplateManagerService {
         task.setCreateTime(null);
         task.setUpdateTime(new Date());
         task.setOperater(AuthUtils.getCurrUserName());
-        return templateTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        boolean result = templateTaskMapper.updateByPrimaryKeySelective(task) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK,ChangeLog.OPERATE_TYPE_UPDATE,task.getId(),task);
+        }
+        return result;
     }
 
     @Override
@@ -230,6 +260,8 @@ public class TemplateManagerService implements ITemplateManagerService {
         rollbackTemplate.setCreator(AuthUtils.getCurrUserName());
 
         autoTemplateMapper.insertSelective(rollbackTemplate);
+
+        changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP,ChangeLog.OPERATE_TYPE_ADD,rollbackTemplate.getId(),rollbackTemplate);
 
         return rollbackTemplate;
     }
@@ -353,8 +385,11 @@ public class TemplateManagerService implements ITemplateManagerService {
     @Override
     public boolean addTemplateZone(TemplateZone templateZone) {
         templateZone.setCreateTime(new Date());
-
-        return templateZoneMapper.insertSelective(templateZone) > 0;
+        boolean result = templateZoneMapper.insertSelective(templateZone) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPZONE,ChangeLog.OPERATE_TYPE_ADD,templateZone.getId(),templateZone);
+        }
+        return result;
     }
 
     @Override
@@ -363,7 +398,14 @@ public class TemplateManagerService implements ITemplateManagerService {
         TemplateZoneExample.Criteria c = example.createCriteria();
         c.andTemplateIdEqualTo(templateId);
         c.andZoneIdEqualTo(zoneId);
-        return templateZoneMapper.deleteByExample(example) > 0;
+        boolean result =  templateZoneMapper.deleteByExample(example) > 0;
+        if (result) {
+            Map<String,Object> data = new HashMap<>();
+            data.put("templateId",templateId);
+            data.put("zoneId",zoneId);
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPZONE,ChangeLog.OPERATE_TYPE_DEL,0,data);
+        }
+        return result;
     }
 
 
