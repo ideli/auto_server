@@ -318,4 +318,11 @@ public class TemplateController extends AutoAbstractController implements ITempl
         templateManagerService.updateTemplateZoneMonitor(req.getTemplateId(),req.getMonitorType(),req.getMonitorParam(),req.getInUse());
         return new NormalReturn("success");
     }
+
+    @Override
+    @Contract(TemplateZoneIpQuery.class)
+    public NormalReturn getZoneTemplates(ServiceRequest request) {
+        TemplateZoneIpQuery req = request.getContract();
+        return new NormalReturn(templateManagerService.getTemplate4Host(req.getHost()));
+    }
 }

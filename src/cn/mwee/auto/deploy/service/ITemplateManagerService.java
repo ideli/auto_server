@@ -142,4 +142,11 @@ public interface ITemplateManagerService {
      * @return
      */
     boolean updateTemplateZoneMonitor(Integer templateId,Byte monitorType,String monitorParam,Byte inUse);
+
+    /**
+     * 根据主机地址获取模板
+     * @param host 主机Ip地址
+     * @return 主机对应模板
+     */
+    List<AutoTemplate> getTemplate4Host(String host);
 }

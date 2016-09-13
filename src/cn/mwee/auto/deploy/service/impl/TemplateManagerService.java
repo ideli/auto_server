@@ -50,6 +50,9 @@ public class TemplateManagerService implements ITemplateManagerService {
     AutoTemplateMapper autoTemplateMapper;
 
     @Autowired
+    AutoTemplateExtMapper autoTemplateExtMapper;
+
+    @Autowired
     TemplateTaskMapper templateTaskMapper;
 
     @Autowired
@@ -580,6 +583,11 @@ public class TemplateManagerService implements ITemplateManagerService {
                 monitorReq = "-a %zone% -n " + param;
         }
         return monitorReq;
+    }
+
+    @Override
+    public List<AutoTemplate> getTemplate4Host(String host) {
+        return autoTemplateExtMapper.getTemplate4Zone(host);
     }
 
     public static void main(String[] args) {
