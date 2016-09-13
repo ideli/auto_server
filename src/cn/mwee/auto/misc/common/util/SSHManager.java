@@ -26,7 +26,6 @@ public class SSHManager
     private String strPassword;
     private Session sesConnection;
     private Channel channel;
-    private String channelId;
     private int intTimeOut = 60000;
     private int intConnectionPort = 22;
 
@@ -196,15 +195,6 @@ public class SSHManager
         }
     }
 
-    public void generateChannelId(){
-        Long currentTimeMillis = System.currentTimeMillis();
-        String id = Long.toHexString(currentTimeMillis)+"-"+ Integer.toHexString(this.channel.hashCode()+new java.util.Random().nextInt());
-        this.channelId = id;
-    }
-
-    public String getChannelId() {
-        return channelId;
-    }
 
     public static void main(String[] args) {
         for (int i = 20; i>0; i--){
