@@ -351,7 +351,8 @@ public class FlowManagerService implements IFlowManagerService {
             if (TaskState.SUCCESS.name().equals(stateNew) ||
                     TaskState.ERROR.name().equals(stateNew)) {
                 sendNoticeMail(flow, stateNew);
-                statsDClientUtils.sendFlowExecutionTime(flowId);
+                if (flow.getNeedbuild() == 0)
+                    statsDClientUtils.sendFlowExecutionTime(flowId);
             }
         }
         return true;
