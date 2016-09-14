@@ -33,4 +33,10 @@
 		<property name="queueCapacity" value="500" />
 	</bean>
 
+    <bean id="statsDClient" class="com.timgroup.statsd.NonBlockingStatsDClient">
+        <constructor-arg type="java.lang.String" value="${mw.auto.metrics.prefix}" />
+        <constructor-arg type="java.lang.String" value="${mw.auto.metrics.hostname}" />
+        <constructor-arg type="int" value="${mw.auto.metrics.port}" />
+    </bean>
+
 </beans>

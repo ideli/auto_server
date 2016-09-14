@@ -1,6 +1,5 @@
 package cn.mwee.auto.deploy.service.impl;
 
-import cn.mwee.auto.auth.dao.ProjectUserMapper;
 import cn.mwee.auto.auth.model.AuthPermission;
 import cn.mwee.auto.auth.util.AuthUtils;
 import cn.mwee.auto.auth.util.SqlUtils;
@@ -22,6 +21,7 @@ import static cn.mwee.auto.deploy.util.AutoConsts.*;
 
 import cn.mwee.auto.deploy.util.AutoUtils;
 
+import cn.mwee.auto.deploy.util.StatsDClientUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -35,7 +35,6 @@ import com.alibaba.fastjson.JSON;
 
 import javax.annotation.Resource;
 
-import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -73,6 +72,9 @@ public class FlowManagerService implements IFlowManagerService {
 
     @Resource
     private TaskMsgSender taskMsgSender;
+
+    @Resource
+    private StatsDClientUtils statsDClientUtils;
 
     @Value("${localhost.name}")
     private String localHost = "127.0.0.1";
@@ -142,14 +144,14 @@ public class FlowManagerService implements IFlowManagerService {
         }
     }
 
-    private boolean canExecute(Flow flow) throws Exception{
+    private boolean canExecute(Flow flow) throws Exception {
         if (FlowReviewType.Unreviewed.equals(flow.getIsreview()) ||
                 FlowReviewType.Unapproved.equals(flow.getIsreview())) {
             throw new Exception("未经批准的流程");
         }
-        Flow lastFlow  = getLastExeFlow(flow.getTemplateId(),flow.getProjectId());
+        Flow lastFlow = getLastExeFlow(flow.getTemplateId(), flow.getProjectId());
         Date exeDate = lastFlow.getUpdateTime();
-        if (exeDate != null &&  DateUtil.addMinutes(exeDate,flowExeDelay).after(new Date())) {
+        if (exeDate != null && DateUtil.addMinutes(exeDate, flowExeDelay).after(new Date())) {
             throw new Exception("发布过于频繁，请稍后重试");
         }
         return true;
@@ -349,6 +351,7 @@ public class FlowManagerService implements IFlowManagerService {
             if (TaskState.SUCCESS.name().equals(stateNew) ||
                     TaskState.ERROR.name().equals(stateNew)) {
                 sendNoticeMail(flow, stateNew);
+                statsDClientUtils.sendFlowExecutionTime(flowId);
             }
         }
         return true;
@@ -787,6 +790,15 @@ public class FlowManagerService implements IFlowManagerService {
         return CollectionUtils.isEmpty(flows) ? null : flows.get(0);
     }
 
+    @Override
+    public FlowTask getOneFlowTask(Integer flowId) {
+        FlowTaskExample example = new FlowTaskExample();
+        example.createCriteria().andFlowIdEqualTo(flowId);
+        example.setLimitStart(0);
+        example.setLimitEnd(1);
+        List<FlowTask> flowTasks = flowTaskMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(flowTasks) ? null : flowTasks.get(0);
+    }
 
     public static void main(String[] args) {
         /*
@@ -809,10 +821,9 @@ public class FlowManagerService implements IFlowManagerService {
        /* Integer i = null;
         System.out.println(i > 0);*/
         Date exeDate = new Date();
-        Date tmpDate = DateUtil.addMinutes(exeDate,1);
+        Date tmpDate = DateUtil.addMinutes(exeDate, 1);
 
         System.out.println("args = [" + tmpDate.after(new Date()) + "]");
-
 
 
     }

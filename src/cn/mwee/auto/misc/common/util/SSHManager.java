@@ -119,7 +119,7 @@ public class SSHManager
         try
         {
             Channel channel = sesConnection.openChannel("exec");
-            JschChannelCache.getCache().put(channel.getId(),channel,channelLiveTime, TimeUnit.SECONDS);
+            JschChannelCache.getCache().put(channel.getId()+"",channel,channelLiveTime, TimeUnit.SECONDS);
             ((ChannelExec)channel).setCommand(command);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(channel.getInputStream()));
@@ -171,7 +171,7 @@ public class SSHManager
     public InputStream sendCmd(String command) {
         try {
             channel = sesConnection.openChannel("exec");
-            JschChannelCache.getCache().put(channel.getId(),channel,channelLiveTime, TimeUnit.SECONDS);
+            JschChannelCache.getCache().put(channel.getId()+"",channel,channelLiveTime, TimeUnit.SECONDS);
             ((ChannelExec)channel).setCommand(command);
             channel.connect();
             return channel.getInputStream();
@@ -198,7 +198,7 @@ public class SSHManager
                 logWarning(e.getMessage());
             }
         }
-        JschChannelCache.getCache().remove(channel.getId());
+        JschChannelCache.getCache().remove(channel.getId()+"");
     }
 
     public long getChannelLiveTime() {

@@ -85,6 +85,7 @@ public class Cache<K, V> {
         if (value !=null && value instanceof Channel) {
             Channel channel = (Channel) value;
             try {
+                channel.getInputStream().close();
                 channel.disconnect();
             } catch (Exception e) {
                 logger.error("",e);
@@ -100,4 +101,32 @@ public class Cache<K, V> {
     public Map<K,V> getAllData() {
         return new HashMap(cacheObjMap);
     }
+
+
+    public static void main(String[] args) throws InterruptedException {
+        Cache<String,String> cache = new Cache<>();
+        for (int i=1;i<10;i++) {
+            String key = "key"+i;
+            String value = "value"+i;
+            cache.put(key,value,10,TimeUnit.MINUTES);
+            System.out.println(key+":"+value);
+        }
+        for (int l=1;l<12;l++){
+            Thread.sleep(1000);
+            System.out.println("===================="+l+"===================");
+            for (int i = 1; i<10; i++) {
+                String key= "key"+i;
+                System.out.println(cache.get(key));
+                if (i%2==0) {
+                    cache.remove(key);
+                }
+            }
+            if (l == 5){
+                Map<String,String> map = cache.getAllData();
+                map.forEach((s, s2) -> System.out.println(s+":"+s2));
+            }
+        }
+    }
+
+
 }

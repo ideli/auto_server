@@ -185,4 +185,12 @@ public interface IFlowManagerService {
 	 * @return
 	 */
 	Flow getLastExeFlow(Integer templateId, Integer projectId);
+
+	/**
+	 * 获取有个flowTask
+	 * @param flowId
+	 * @return
+     */
+	FlowTask getOneFlowTask(Integer flowId);
+
 }
