@@ -284,6 +284,6 @@ public class DeployController implements IDeployController {
     @Override
     @Contract(BaseContract.class)
     public NormalReturn jschConnections(ServiceRequest request) {
-        return new NormalReturn(JschChannelCache.getCache().getAllData());
+        return new NormalReturn(JschChannelCache.getAllData());
     }
 }

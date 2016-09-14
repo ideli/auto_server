@@ -97,7 +97,7 @@ public class Cache<K, V> {
         }
     }
 
-    public Map getAllData() {
+    public Map<K,V> getAllData() {
         return new HashMap(cacheObjMap);
     }
 }
