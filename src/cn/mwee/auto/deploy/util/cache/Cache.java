@@ -52,6 +52,7 @@ public class Cache<K, V> {
     }
 
     public V put(K key, V value, long timeout, TimeUnit unit) {
+        logger.info("mw_auto_cache put key[{}]",key);
         V oldValue = cacheObjMap.put(key, value);
         if (oldValue != null) {
             queue.remove(key);
@@ -61,6 +62,7 @@ public class Cache<K, V> {
     }
 
     public V remove(K key) {
+        logger.info("mw_auto_cache remove key[{}]",key);
         V oldValue = cacheObjMap.remove(key);
         if (oldValue != null) {
             queue.remove(key);
@@ -82,6 +84,7 @@ public class Cache<K, V> {
     }
 
     public void timeOutDestroy(K key, V value){
+        logger.info("mw_auto_cache timeOut key[{}]",key);
         if (value !=null && value instanceof Channel) {
             Channel channel = (Channel) value;
             try {
