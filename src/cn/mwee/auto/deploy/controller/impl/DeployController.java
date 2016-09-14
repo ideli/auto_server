@@ -14,6 +14,7 @@ import cn.mwee.auto.deploy.contract.commom.BaseContract;
 import cn.mwee.auto.deploy.contract.flow.*;
 import cn.mwee.auto.deploy.model.*;
 import cn.mwee.auto.deploy.service.ITaskManagerService;
+import cn.mwee.auto.deploy.util.cache.JschChannelCache;
 import cn.mwee.auto.misc.aspect.contract.Model;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.slf4j.Logger;
@@ -114,7 +115,6 @@ public class DeployController implements IDeployController {
         try {
             return new NormalReturn("200", "success", flowManagerService.getZonesState(req.getFlowId()));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             logger.error("", e);
             return new NormalReturn("500", e.getMessage(), "error");
         }
@@ -127,7 +127,6 @@ public class DeployController implements IDeployController {
         try {
             return new NormalReturn("200", "success", flowManagerService.getZoneFlowTaskInfo(req.getFlowId(), req.getZone()));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             logger.error("", e);
             return new NormalReturn("500", e.getMessage(), "error");
         }
@@ -280,5 +279,11 @@ public class DeployController implements IDeployController {
             return new NormalReturn("500", e.getMessage());
         }
 
+    }
+
+    @Override
+    @Contract(BaseContract.class)
+    public NormalReturn jschConnections(ServiceRequest request) {
+        return new NormalReturn(JschChannelCache.getCache().getAllData());
     }
 }

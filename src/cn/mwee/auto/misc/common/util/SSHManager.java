@@ -31,6 +31,8 @@ public class SSHManager
     private int intTimeOut = 60000;
     private int intConnectionPort = 22;
 
+    private long channelLiveTime = 3600;
+
     private String prvkey;
     
     private ThreadPoolTaskExecutor taskLogExecutor;
@@ -117,7 +119,7 @@ public class SSHManager
         try
         {
             Channel channel = sesConnection.openChannel("exec");
-            JschChannelCache.getCache().put(channel.getId(),channel,10, TimeUnit.MINUTES);
+            JschChannelCache.getCache().put(channel.getId(),channel,channelLiveTime, TimeUnit.SECONDS);
             ((ChannelExec)channel).setCommand(command);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(channel.getInputStream()));
@@ -169,7 +171,7 @@ public class SSHManager
     public InputStream sendCmd(String command) {
         try {
             channel = sesConnection.openChannel("exec");
-            JschChannelCache.getCache().put(channel.getId(),channel,10, TimeUnit.MINUTES);
+            JschChannelCache.getCache().put(channel.getId(),channel,channelLiveTime, TimeUnit.SECONDS);
             ((ChannelExec)channel).setCommand(command);
             channel.connect();
             return channel.getInputStream();
@@ -199,6 +201,13 @@ public class SSHManager
         JschChannelCache.getCache().remove(channel.getId());
     }
 
+    public long getChannelLiveTime() {
+        return channelLiveTime;
+    }
+
+    public void setChannelLiveTime(long channelLiveTime) {
+        this.channelLiveTime = channelLiveTime;
+    }
 
     public static void main(String[] args) {
         for (int i = 20; i>0; i--){

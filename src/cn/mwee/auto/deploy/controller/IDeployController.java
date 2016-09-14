@@ -114,4 +114,11 @@ public interface IDeployController extends IController {
 	 */
 	NormalReturn rollBackFlow(ServiceRequest request);
 
+	/**
+	 * 当前shell连接信息
+	 * @param request
+	 * @return
+	 */
+	NormalReturn jschConnections(ServiceRequest request);
+
 }

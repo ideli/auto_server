@@ -4,6 +4,8 @@ import com.jcraft.jsch.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.DelayQueue;
@@ -93,5 +95,9 @@ public class Cache<K, V> {
                 logger.error("",e);
             }
         }
+    }
+
+    public Map getAllData() {
+        return new HashMap(cacheObjMap);
     }
 }

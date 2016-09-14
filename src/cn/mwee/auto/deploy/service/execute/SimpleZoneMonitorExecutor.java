@@ -27,6 +27,9 @@ public class SimpleZoneMonitorExecutor {
     @Value("${auto.ssh.auths}")
     private String sshAuthStrs;
 
+    @Value("${auto.ssh.channel.liveTime}")
+    private long sshLiveTime ;
+
     @Resource
     private ITemplateManagerService templateManagerService;
 
@@ -58,6 +61,7 @@ public class SimpleZoneMonitorExecutor {
             String exeTargetHost = zoneMonitorTask.getExeTargetHost();
             logger.info("Monitor task user:[{}],host:[{}],command:[{}]",sshShellUser,exeTargetHost,command);
             instance = new SSHManager(sshShellUser, sshPriAddr, exeTargetHost,null,null,null);
+            instance.setChannelLiveTime(sshLiveTime > 0 ? sshLiveTime : 3600);
             String errMsg = instance.connect();
             if (errMsg != null) throw new Exception(errMsg);
             BufferedReader reader = new BufferedReader(new InputStreamReader(instance.sendCmd(command)));

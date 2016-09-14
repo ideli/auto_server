@@ -53,7 +53,8 @@ public class SimpleTaskExecutor implements TaskExecutor {
     @Resource
     private TaskMsgSender taskMsgSender;
 
-
+    @Value("${auto.ssh.channel.liveTime}")
+    private long sshLiveTime ;
 
     @Value("${auto.ssh.auths}")
     private String sshAuthStrs;
@@ -138,7 +139,7 @@ public class SimpleTaskExecutor implements TaskExecutor {
                     flowTask.getZone() : task.getExecZone();
             instance = new SSHManager(sshShellUser, sshPriAddr, exeTargetHost,
                     flowTaskLogService, taskLogExecutor, logId);
-
+            instance.setChannelLiveTime(sshLiveTime > 0 ? sshLiveTime : 3600);
             String errorMessage = instance.connect();
 
             if (errorMessage != null) {
