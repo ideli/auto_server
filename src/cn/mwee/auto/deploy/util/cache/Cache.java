@@ -34,13 +34,14 @@ public class Cache<K, V> {
     }
 
     private void daemonCheck() {
-        logger.info("cache service started.");
+        logger.info("===========================cache service started.==================================");
         while (true) {
             try {
                 DelayItem<K> delayItem = queue.take();
                 if (delayItem != null) {
                     K key = delayItem.getItem();
-                    cacheObjMap.remove(key);
+                    V value = cacheObjMap.remove(key);
+                    timeOutDestroy(key,value);
                 }
 
             } catch (InterruptedException e) {
