@@ -89,7 +89,6 @@ public class Cache<K, V> {
         if (value !=null && value instanceof Channel) {
             Channel channel = (Channel) value;
             try {
-                channel.getInputStream().close();
                 channel.disconnect();
             } catch (Exception e) {
                 logger.error("",e);
