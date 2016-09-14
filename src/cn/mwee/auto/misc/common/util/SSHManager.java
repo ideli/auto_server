@@ -1,5 +1,6 @@
 package cn.mwee.auto.misc.common.util;
 
+import cn.mwee.auto.deploy.util.cache.JschChannelCache;
 import com.jcraft.jsch.*;
 
 import cn.mwee.auto.deploy.service.IFlowTaskLogService;
@@ -12,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by huming on 16/7/6.
@@ -115,6 +117,7 @@ public class SSHManager
         try
         {
             Channel channel = sesConnection.openChannel("exec");
+            JschChannelCache.getCache().put(channel.getId(),channel,10, TimeUnit.MINUTES);
             ((ChannelExec)channel).setCommand(command);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(channel.getInputStream()));
@@ -166,6 +169,7 @@ public class SSHManager
     public InputStream sendCmd(String command) {
         try {
             channel = sesConnection.openChannel("exec");
+            JschChannelCache.getCache().put(channel.getId(),channel,10, TimeUnit.MINUTES);
             ((ChannelExec)channel).setCommand(command);
             channel.connect();
             return channel.getInputStream();
@@ -191,8 +195,8 @@ public class SSHManager
             } catch (Exception e) {
                 logWarning(e.getMessage());
             }
-
         }
+        JschChannelCache.getCache().remove(channel.getId());
     }
 
 
