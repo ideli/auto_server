@@ -31,6 +31,7 @@ public class SSHManager
     private int intTimeOut = 60000;
     private int intConnectionPort = 22;
 
+    private String channelId;
     private long channelLiveTime = 3600;
 
     private String prvkey;
@@ -119,7 +120,8 @@ public class SSHManager
         try
         {
             Channel channel = sesConnection.openChannel("exec");
-            JschChannelCache.getCache().put(channel.getId()+"",channel,channelLiveTime, TimeUnit.SECONDS);
+            generateChannelId();
+            JschChannelCache.getCache().put(channelId,channel,channelLiveTime, TimeUnit.SECONDS);
             ((ChannelExec)channel).setCommand(command);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(channel.getInputStream()));
@@ -171,7 +173,8 @@ public class SSHManager
     public InputStream sendCmd(String command) {
         try {
             channel = sesConnection.openChannel("exec");
-            JschChannelCache.getCache().put(channel.getId()+"",channel,channelLiveTime, TimeUnit.SECONDS);
+            generateChannelId();
+            JschChannelCache.getCache().put(channelId,channel,channelLiveTime, TimeUnit.SECONDS);
             ((ChannelExec)channel).setCommand(command);
             channel.connect();
             return channel.getInputStream();
@@ -198,7 +201,13 @@ public class SSHManager
                 logWarning(e.getMessage());
             }
         }
-        JschChannelCache.getCache().remove(channel.getId()+"");
+        JschChannelCache.getCache().remove(channelId);
+    }
+
+    public void generateChannelId(){
+        Long currentTimeMillis = System.currentTimeMillis();
+        String id = Long.toHexString(currentTimeMillis)+"-"+ Integer.toHexString(this.channel.hashCode()+new java.util.Random().nextInt());
+        this.channelId = id;
     }
 
     public long getChannelLiveTime() {
