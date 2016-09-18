@@ -13,11 +13,13 @@ import cn.mwee.auto.deploy.model.Zone;
 import cn.mwee.auto.deploy.model.ZoneExample;
 import cn.mwee.auto.deploy.service.IZoneService;
 import cn.mwee.auto.deploy.util.AutoConsts;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by huming on 16/8/2.
@@ -113,5 +115,13 @@ public class ZoneService implements IZoneService{
     public boolean modifyZone(Zone zone) {
         zone.setUpdateTime(new Date());
         return zoneMapper.updateByPrimaryKeySelective(zone) > 0;
+    }
+
+    @Override
+    public Zone getZone4Ip(String ip) {
+        ZoneExample example = new ZoneExample();
+        example.createCriteria().andIpEqualTo(ip);
+        List<Zone> zones = zoneMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(zones) ? null : zones.get(0);
     }
 }

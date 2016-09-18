@@ -22,4 +22,6 @@ public interface IZoneService {
     boolean deleteZone(int zoneId);
 
     boolean modifyZone(Zone zone);
+
+    Zone getZone4Ip(String ip);
 }

@@ -4,10 +4,7 @@ import cn.mwee.auto.auth.model.AuthPermission;
 import cn.mwee.auto.deploy.AutoAbstractController;
 import cn.mwee.auto.deploy.contract.template.*;
 import cn.mwee.auto.deploy.controller.ITemplateController;
-import cn.mwee.auto.deploy.model.AutoTemplate;
-import cn.mwee.auto.deploy.model.Flow;
-import cn.mwee.auto.deploy.model.TemplateTask;
-import cn.mwee.auto.deploy.model.TemplateZone;
+import cn.mwee.auto.deploy.model.*;
 import cn.mwee.auto.deploy.service.*;
 import cn.mwee.auto.deploy.util.AutoConsts;
 import cn.mwee.auto.misc.aspect.contract.Contract;
@@ -248,8 +245,14 @@ public class TemplateController extends AutoAbstractController implements ITempl
         {
             if(Utilities.isIpAddress(zone))
             {
-                int zoneId = zoneService.addZone(zone);
-
+                Zone exitsZone = zoneService.getZone4Ip(zone);
+                int zoneId;
+                if (exitsZone != null) {
+                    zoneId = exitsZone.getId();
+                } else {
+                    zoneId = zoneService.addZone(zone);
+                }
+;
                 TemplateZone templateZone = new TemplateZone();
 
                 templateZone.setTemplateId(contract.getTemplateId());
