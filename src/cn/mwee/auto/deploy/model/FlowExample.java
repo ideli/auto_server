@@ -571,6 +571,66 @@ public class FlowExample {
             return (Criteria) this;
         }
 
+        public Criteria andEnvIsNull() {
+            addCriterion("env is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvIsNotNull() {
+            addCriterion("env is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvEqualTo(Byte value) {
+            addCriterion("env =", value, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvNotEqualTo(Byte value) {
+            addCriterion("env <>", value, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvGreaterThan(Byte value) {
+            addCriterion("env >", value, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvGreaterThanOrEqualTo(Byte value) {
+            addCriterion("env >=", value, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvLessThan(Byte value) {
+            addCriterion("env <", value, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvLessThanOrEqualTo(Byte value) {
+            addCriterion("env <=", value, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvIn(List<Byte> values) {
+            addCriterion("env in", values, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvNotIn(List<Byte> values) {
+            addCriterion("env not in", values, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvBetween(Byte value1, Byte value2) {
+            addCriterion("env between", value1, value2, "env");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnvNotBetween(Byte value1, Byte value2) {
+            addCriterion("env not between", value1, value2, "env");
+            return (Criteria) this;
+        }
+
         public Criteria andParamsIsNull() {
             addCriterion("params is null");
             return (Criteria) this;

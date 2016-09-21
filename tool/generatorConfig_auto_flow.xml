@@ -74,15 +74,16 @@
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>-->
-
-		<!--<table tableName="flows" domainObjectName="Flow"
+<!--
+		<table tableName="flows" domainObjectName="Flow"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
 			   enableDeleteByExample="true"
 			   enableSelectByExample="true"
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
-		</table>-->
+		</table>
+		-->
 		<!--<table tableName="templates" domainObjectName="AutoTemplate"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
@@ -91,14 +92,14 @@
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>-->
-		<!--<table tableName="template_zones" domainObjectName="TemplateZone"
+		<table tableName="template_zones" domainObjectName="TemplateZone"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
 			   enableDeleteByExample="true"
 			   enableSelectByExample="true"
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
-		</table>-->
+		</table>
 
 		<!--<table tableName="projects" domainObjectName="AutoProject"
 			   enableCountByExample="true"
@@ -127,7 +128,7 @@
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>
--->
+--><!--
 		<table tableName="auto_change_log" domainObjectName="AutoChangeLog"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
@@ -135,7 +136,7 @@
 			   enableSelectByExample="true"
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
-		</table>
+		</table>-->
 
 <!-- 
 		<table tableName="zones" domainObjectName="Zone"

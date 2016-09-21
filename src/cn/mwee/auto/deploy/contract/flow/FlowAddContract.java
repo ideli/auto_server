@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import cn.mwee.auto.deploy.contract.commom.BaseContract;
 import cn.mwee.auto.deploy.model.FlowStrategy;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -20,7 +21,7 @@ import org.hibernate.validator.constraints.Range;
  * 2016年7月6日下午5:27:18
  */
 @Data
-public class FlowAddContract {
+public class FlowAddContract extends BaseContract {
 	/**
      * 名称
      */

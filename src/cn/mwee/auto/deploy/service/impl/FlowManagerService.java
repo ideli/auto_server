@@ -97,7 +97,7 @@ public class FlowManagerService implements IFlowManagerService {
         }
         flow.setIsreview(template.getReview() == 1 ? FlowReviewType.Unreviewed : FlowReviewType.Ignore);
         flow.setCreateTime(new Date());
-        flow.setCreator(SecurityUtils.getSubject().getPrincipal() == null ? "system" : SecurityUtils.getSubject().getPrincipal().toString());
+        flow.setCreator(AuthUtils.getCurrUserName());
         flow.setOperater(flow.getCreator());
         flow.setParams(JSON.toJSONString(params));
         flow.setState(TaskState.INIT.name());
@@ -117,6 +117,7 @@ public class FlowManagerService implements IFlowManagerService {
     private Flow createFlowSimple(FlowAddContract req) {
         Flow flow = new Flow();
         flow.setName(req.getName());
+        flow.setEnv(req.getEnv());
         flow.setTemplateId(req.getTemplateId());
         flow.setProjectId(req.getProjectId());
         flow.setZones(req.getZones());
@@ -694,7 +695,7 @@ public class FlowManagerService implements IFlowManagerService {
     public BaseQueryResult<Flow> getFlows(FlowQueryContract req, Flow flow) {
         FlowExample example = new FlowExample();
         FlowExample.Criteria criteria = example.createCriteria();
-        criteria.andProjectIdEqualTo(req.getProjectId());
+        criteria.andProjectIdEqualTo(req.getProjectId()).andEnvEqualTo(req.getEnv());
 
         example.setOrderByClause("id DESC");
 

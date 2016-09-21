@@ -11,6 +11,14 @@ public class TemplateZone {
     private Integer id;
 
     /**
+     * 模板区名称
+     * template_zones.name
+     *
+     * @mbggenerated
+     */
+    private String name;
+
+    /**
      * 模板id
      * template_zones.template_id
      *
@@ -25,6 +33,14 @@ public class TemplateZone {
      * @mbggenerated
      */
     private Integer zoneId;
+
+    /**
+     * 环境，默认值0：0，dev；1，test；2，uat；3，prod
+     * template_zones.env
+     *
+     * @mbggenerated
+     */
+    private Byte env;
 
     /**
      * 状态
@@ -79,6 +95,30 @@ public class TemplateZone {
     }
 
     /**
+     * 模板区名称
+     * This method returns the value of the database column template_zones.name
+     *
+     * @return the value of template_zones.name
+     *
+     * @mbggenerated
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * 模板区名称
+     * This method sets the value of the database column template_zones.name
+     *
+     * @param name the value for template_zones.name
+     *
+     * @mbggenerated
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * 模板id
      * This method returns the value of the database column template_zones.template_id
      *
@@ -124,6 +164,30 @@ public class TemplateZone {
      */
     public void setZoneId(Integer zoneId) {
         this.zoneId = zoneId;
+    }
+
+    /**
+     * 环境，默认值0：0，dev；1，test；2，uat；3，prod
+     * This method returns the value of the database column template_zones.env
+     *
+     * @return the value of template_zones.env
+     *
+     * @mbggenerated
+     */
+    public Byte getEnv() {
+        return env;
+    }
+
+    /**
+     * 环境，默认值0：0，dev；1，test；2，uat；3，prod
+     * This method sets the value of the database column template_zones.env
+     *
+     * @param env the value for template_zones.env
+     *
+     * @mbggenerated
+     */
+    public void setEnv(Byte env) {
+        this.env = env;
     }
 
     /**

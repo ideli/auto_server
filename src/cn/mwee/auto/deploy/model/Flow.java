@@ -43,6 +43,14 @@ public class Flow {
     private String zones;
 
     /**
+     * 环境，默认值0：0，dev；1，test；2，uat；3，prod
+     * flows.env
+     *
+     * @mbggenerated
+     */
+    private Byte env;
+
+    /**
      * 任务执行参数json格式
      * flows.params
      *
@@ -51,7 +59,7 @@ public class Flow {
     private String params;
 
     /**
-     * 是否需要构建：0，不需要；1，需要
+     * 是否为回滚流程：0，不是；1，是
      * flows.needbuild
      *
      * @mbggenerated
@@ -245,6 +253,30 @@ public class Flow {
     }
 
     /**
+     * 环境，默认值0：0，dev；1，test；2，uat；3，prod
+     * This method returns the value of the database column flows.env
+     *
+     * @return the value of flows.env
+     *
+     * @mbggenerated
+     */
+    public Byte getEnv() {
+        return env;
+    }
+
+    /**
+     * 环境，默认值0：0，dev；1，test；2，uat；3，prod
+     * This method sets the value of the database column flows.env
+     *
+     * @param env the value for flows.env
+     *
+     * @mbggenerated
+     */
+    public void setEnv(Byte env) {
+        this.env = env;
+    }
+
+    /**
      * 任务执行参数json格式
      * This method returns the value of the database column flows.params
      *
@@ -269,7 +301,7 @@ public class Flow {
     }
 
     /**
-     * 是否需要构建：0，不需要；1，需要
+     * 是否为回滚流程：0，不是；1，是
      * This method returns the value of the database column flows.needbuild
      *
      * @return the value of flows.needbuild
@@ -281,7 +313,7 @@ public class Flow {
     }
 
     /**
-     * 是否需要构建：0，不需要；1，需要
+     * 是否为回滚流程：0，不是；1，是
      * This method sets the value of the database column flows.needbuild
      *
      * @param needbuild the value for flows.needbuild

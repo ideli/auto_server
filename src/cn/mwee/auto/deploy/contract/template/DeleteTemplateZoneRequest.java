@@ -9,10 +9,7 @@ import org.hibernate.validator.constraints.Range;
 @Data
 public class DeleteTemplateZoneRequest {
 
-    @Range(min = 1,message = "invalid templateId value")
-    private Integer templateId;
-
-    @Range(min = 1,message = "invalid zoneId value")
-    private Integer zoneId;
+    @Range(min = 1,message = "invalid templateZoneId value")
+    private Integer templateZoneId;
 
 }

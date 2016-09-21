@@ -27,6 +27,11 @@ public class BaseContract {
 	private String token;
 
 	/**
+	 * 环境
+	 */
+	private Byte env;
+
+	/**
 	 * 当前页面url
 	 */
 	private String currentPageUrl;

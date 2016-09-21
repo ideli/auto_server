@@ -235,6 +235,42 @@ public class TemplateController extends AutoAbstractController implements ITempl
     public NormalReturn addBatchTemplateZone(ServiceRequest request)
     {
         AddTemplateZonesRequest contract = request.getContract();
+        List<Map<String,String>> zoneDataList = contract.getZoneDataList();
+
+        List<String> successList = Lists.newArrayList();
+        List<String> failList = Lists.newArrayList();
+
+        zoneDataList.forEach(zoneData -> {
+            String name = zoneData.get("name");
+            String ip = zoneData.get("ip");
+            Byte env = new Byte(zoneData.get("env"));
+            if (Utilities.isIpAddress(ip)) {
+                Zone exitsZone = zoneService.getZone4Ip(ip);
+                int zoneId;
+                if (exitsZone != null) {
+                    zoneId = exitsZone.getId();
+                } else {
+                    zoneId = zoneService.addZone(ip);
+                }
+                TemplateZone templateZone = new TemplateZone();
+                templateZone.setTemplateId(contract.getTemplateId());
+                templateZone.setName(name);
+                templateZone.setZoneId(zoneId);
+                templateZone.setEnv(env);
+                boolean addSuccess = templateManagerService.addTemplateZone(templateZone);
+                if(addSuccess)
+                {
+                    successList.add(ip);
+                }
+                else
+                {
+                    failList.add(ip);
+                }
+            } else {
+                failList.add(ip);
+            }
+        });
+/*
 
         String[] zones = StringUtils.split(contract.getZones(), ",|;| ");
 
@@ -276,12 +312,10 @@ public class TemplateController extends AutoAbstractController implements ITempl
                 failList.add(zone);
             }
         }
-
+*/
         HashMap<String,List<String>> maps = Maps.newHashMap();
-
         maps.put("successList",successList);
         maps.put("failList",failList);
-
         return new NormalReturn(maps);
     }
 
@@ -290,7 +324,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
     public NormalReturn removeTemplateZone(ServiceRequest request)
     {
         DeleteTemplateZoneRequest contract = request.getContract();
-        boolean rmSuccess = templateManagerService.removeTemplateZone(contract.getTemplateId(),contract.getZoneId());
+        boolean rmSuccess = templateManagerService.removeTemplateZone(contract.getTemplateZoneId());
         return new NormalReturn(rmSuccess);
     }
 

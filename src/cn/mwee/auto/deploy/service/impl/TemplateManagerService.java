@@ -292,10 +292,11 @@ public class TemplateManagerService implements ITemplateManagerService {
 
 
     @Override
-    public List<Zone> getTemplateZones(Integer templateId) {
+    public List<TemplateZoneModel> getTemplateZones(Integer templateId) {
+        /*
         TemplateZoneExample example = new TemplateZoneExample();
-        example.createCriteria()
-                .andTemplateIdEqualTo(templateId);
+        TemplateZoneExample.Criteria criteria = example.createCriteria().andTemplateIdEqualTo(templateId);
+        if (env != null) criteria.andEnvEqualTo(env);
         List<TemplateZone> tzs = templateZoneMapper.selectByExample(example);
         List<Integer> zoneIds = new ArrayList<>();
         tzs.forEach(item -> zoneIds.add(item.getZoneId()));
@@ -305,6 +306,8 @@ public class TemplateManagerService implements ITemplateManagerService {
         zoneExample.createCriteria()
                 .andIdIn(zoneIds);
         return zoneMapper.selectByExample(zoneExample);
+        */
+        return templateZoneExtMapper.selectTemplateZoneModels(templateId);
     }
 
     @Override
@@ -393,23 +396,9 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
-    public boolean removeTemplateZone(int templateId, int zoneId) {
-        TemplateZoneExample example = new TemplateZoneExample();
-        TemplateZoneExample.Criteria c = example.createCriteria();
-        c.andTemplateIdEqualTo(templateId);
-        c.andZoneIdEqualTo(zoneId);
-        List<TemplateZone>  templateZones =templateZoneMapper.selectByExample(example);
-        TemplateZone changeBefore = CollectionUtils.isEmpty(templateZones) ? null:templateZones.get(0);
-        boolean result = templateZoneMapper.deleteByExample(example) > 0;
-        if (result) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("templateId", templateId);
-            data.put("zoneId", zoneId);
-            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPZONE, ChangeLog.OPERATE_TYPE_DEL, changeBefore.getId(),changeBefore, data);
-        }
-        return result;
+    public boolean removeTemplateZone(int templateZoneId) {
+        return templateZoneMapper.deleteByPrimaryKey(templateZoneId) > 0;
     }
-
 
     @Override
     public List<AutoTemplate> getTemplates4Project(Integer projectId) {

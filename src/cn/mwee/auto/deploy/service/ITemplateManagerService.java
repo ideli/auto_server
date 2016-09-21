@@ -55,7 +55,7 @@ public interface ITemplateManagerService {
      * @param templateId
      * @return
      */
-    List<Zone> getTemplateZones(Integer templateId);
+    List<TemplateZoneModel> getTemplateZones(Integer templateId);
 
     /**
      * 获取模板中的任务
@@ -81,7 +81,7 @@ public interface ITemplateManagerService {
 
     boolean addTemplateZone(TemplateZone templateZone);
 
-    boolean removeTemplateZone(int templateId,int zoneId);
+    boolean removeTemplateZone(int templateZoneId);
 
     /**
      * 获取项目模板
