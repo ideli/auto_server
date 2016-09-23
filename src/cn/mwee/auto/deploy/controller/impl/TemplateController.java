@@ -238,80 +238,79 @@ public class TemplateController extends AutoAbstractController implements ITempl
         List<String> failList = Lists.newArrayList();
         AddTemplateZonesRequest contract = request.getContract();
 
-        List<Map<String,String>> zoneDataList = contract.getZoneDataList();
-        zoneDataList.forEach(zoneData -> {
-            String name = zoneData.get("name");
-            String ip = zoneData.get("ip");
-            Byte env = new Byte(zoneData.get("env"));
-            if (Utilities.isIpAddress(ip)) {
-                Zone exitsZone = zoneService.getZone4Ip(ip);
-                int zoneId;
-                if (exitsZone != null) {
-                    zoneId = exitsZone.getId();
+        if (contract.getAddType() == 1) {
+            List<Map<String,String>> zoneDataList = contract.getZoneDataList();
+            zoneDataList.forEach(zoneData -> {
+                String name = zoneData.get("name");
+                String ip = zoneData.get("ip");
+                Byte env = new Byte(zoneData.get("env"));
+                if (Utilities.isIpAddress(ip)) {
+                    Zone exitsZone = zoneService.getZone4Ip(ip);
+                    int zoneId;
+                    if (exitsZone != null) {
+                        zoneId = exitsZone.getId();
+                    } else {
+                        zoneId = zoneService.addZone(ip);
+                    }
+                    TemplateZone templateZone = new TemplateZone();
+                    templateZone.setTemplateId(contract.getTemplateId());
+                    templateZone.setName(name);
+                    templateZone.setZoneId(zoneId);
+                    templateZone.setEnv(env);
+                    boolean addSuccess = templateManagerService.addTemplateZone(templateZone);
+                    if(addSuccess)
+                    {
+                        successList.add(ip);
+                    }
+                    else
+                    {
+                        failList.add(ip);
+                    }
                 } else {
-                    zoneId = zoneService.addZone(ip);
-                }
-                TemplateZone templateZone = new TemplateZone();
-                templateZone.setTemplateId(contract.getTemplateId());
-                templateZone.setName(name);
-                templateZone.setZoneId(zoneId);
-                templateZone.setEnv(env);
-                boolean addSuccess = templateManagerService.addTemplateZone(templateZone);
-                if(addSuccess)
-                {
-                    successList.add(ip);
-                }
-                else
-                {
                     failList.add(ip);
                 }
-            } else {
-                failList.add(ip);
-            }
-        });
-/*
-
-        String[] zones = StringUtils.split(contract.getZones(), ",|;| ");
-
-        List<String> successList = Lists.newArrayList();
-        List<String> failList = Lists.newArrayList();
-
-        for (String zone : zones)
-        {
-            if(Utilities.isIpAddress(zone))
+            });
+        } else {
+            String[] zones = StringUtils.split(contract.getZones(), ",|;| ");
+            Byte env = contract.getEnv();
+            if (env == null) return new NormalReturn("500","模板区环境不能为空");
+            for (String zone : zones)
             {
-                Zone exitsZone = zoneService.getZone4Ip(zone);
-                int zoneId;
-                if (exitsZone != null) {
-                    zoneId = exitsZone.getId();
-                } else {
-                    zoneId = zoneService.addZone(zone);
-                }
-;
-                TemplateZone templateZone = new TemplateZone();
-
-                templateZone.setTemplateId(contract.getTemplateId());
-
-                templateZone.setZoneId(zoneId);
-
-                boolean addSuccess = templateManagerService.addTemplateZone(templateZone);
-
-                if(addSuccess)
+                if(Utilities.isIpAddress(zone))
                 {
-                    successList.add(zone);
+                    Zone exitsZone = zoneService.getZone4Ip(zone);
+                    int zoneId;
+                    if (exitsZone != null) {
+                        zoneId = exitsZone.getId();
+                    } else {
+                        zoneId = zoneService.addZone(zone);
+                    }
+                    TemplateZone templateZone = new TemplateZone();
+
+                    templateZone.setName(zone);
+
+                    templateZone.setTemplateId(contract.getTemplateId());
+
+                    templateZone.setZoneId(zoneId);
+
+                    templateZone.setEnv(env);
+                    boolean addSuccess = templateManagerService.addTemplateZone(templateZone);
+
+                    if(addSuccess)
+                    {
+                        successList.add(zone);
+                    }
+                    else
+                    {
+                        failList.add(zone);
+                    }
                 }
                 else
                 {
                     failList.add(zone);
                 }
-
-            }
-            else
-            {
-                failList.add(zone);
             }
         }
-*/
         HashMap<String,List<String>> maps = Maps.newHashMap();
         maps.put("successList",successList);
         maps.put("failList",failList);

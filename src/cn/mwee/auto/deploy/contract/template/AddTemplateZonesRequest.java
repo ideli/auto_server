@@ -18,6 +18,9 @@ public class AddTemplateZonesRequest extends BaseContract {
     @Min(value = 1, message = "invalid templateId value")
     private Integer templateId;
 
+    @NotNull(message = "新增类型不能为空")
+    private Integer addType;
+
     @NotBlank(message="区信息不能为空")
     private String zones;
 
