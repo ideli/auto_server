@@ -695,7 +695,7 @@ public class FlowManagerService implements IFlowManagerService {
     public BaseQueryResult<Flow> getFlows(FlowQueryContract req, Flow flow) {
         FlowExample example = new FlowExample();
         FlowExample.Criteria criteria = example.createCriteria();
-        criteria.andProjectIdEqualTo(req.getProjectId()).andEnvEqualTo(req.getEnv());
+        criteria.andProjectIdEqualTo(req.getProjectId());
 
         example.setOrderByClause("id DESC");
 

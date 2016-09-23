@@ -161,7 +161,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
             //基础信息
             result.put("baseInfo",templateManagerService.getTemplate(req.getTemplateId()));
             //区信息
-            result.put("zones", templateManagerService.getTemplateZones(req.getTemplateId()));
+            result.put("zones", templateManagerService.getTemplateZones(req.getTemplateId(),req.getEnv()));
             //任务信息
 //            result.put("tasks", templateManagerService.getTemplateSimpleTasks(req.getTemplateId()));
             //任务参数key
@@ -234,12 +234,11 @@ public class TemplateController extends AutoAbstractController implements ITempl
     @Contract(AddTemplateZonesRequest.class)
     public NormalReturn addBatchTemplateZone(ServiceRequest request)
     {
-        AddTemplateZonesRequest contract = request.getContract();
-        List<Map<String,String>> zoneDataList = contract.getZoneDataList();
-
         List<String> successList = Lists.newArrayList();
         List<String> failList = Lists.newArrayList();
+        AddTemplateZonesRequest contract = request.getContract();
 
+        List<Map<String,String>> zoneDataList = contract.getZoneDataList();
         zoneDataList.forEach(zoneData -> {
             String name = zoneData.get("name");
             String ip = zoneData.get("ip");

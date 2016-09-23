@@ -58,6 +58,13 @@ public interface ITemplateManagerService {
     List<TemplateZoneModel> getTemplateZones(Integer templateId);
 
     /**
+     * 获取模板区域信息
+     * @param templateId
+     * @return
+     */
+    List<TemplateZoneModel> getTemplateZones(Integer templateId,Byte env);
+
+    /**
      * 获取模板中的任务
      * @param templateId
      * @return

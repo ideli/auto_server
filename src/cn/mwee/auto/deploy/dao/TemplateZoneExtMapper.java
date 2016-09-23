@@ -18,4 +18,9 @@ public interface TemplateZoneExtMapper {
     @ResultType(TemplateZoneModel.class)
     List<TemplateZoneModel> selectTemplateZoneModels(@Param("templateId") Integer templateId);
 
+    @Select("SELECT tz.id,tz.`name`,tz.env,tz.create_time as createTime,z.ip FROM template_zones tz LEFT JOIN zones z ON tz.zone_id = z.id where tz.template_id = #{templateId} AND tz.env = #{env}  ORDER BY tz.env")
+    @ResultType(TemplateZoneModel.class)
+    List<TemplateZoneModel> selectTemplateZoneModelsWithEvn(@Param("templateId") Integer templateId,@Param("env") Byte env);
+
+
 }

@@ -21,6 +21,7 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import cn.mwee.auto.auth.controller.IAuthController;
@@ -41,6 +42,9 @@ public class AuthController implements IAuthController {
     @Autowired
     private IUserService userService;
 
+    @Value("${server.current.version}")
+    private String serverVersion;
+
     @Override
     @Contract(LoginReq.class)
     public NormalReturn login(ServiceRequest request) {
@@ -59,6 +63,7 @@ public class AuthController implements IAuthController {
             resp.setToken(subject.getSession().getId().toString());
             resp.setName(user.getName());
             resp.setUserName(user.getUsername());
+            resp.setServerVersion(serverVersion);
             return new NormalReturn("200", "success", resp);
         } catch (AuthenticationException e) {
             return new NormalReturn("502", "error", "用户名/密码错误");

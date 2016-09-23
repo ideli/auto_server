@@ -25,5 +25,9 @@ public class LoginResp {
      */
 	private String name;
 
+	/**
+	 * 服务当前版本
+	 */
+	private String serverVersion;
 
 }

@@ -293,21 +293,12 @@ public class TemplateManagerService implements ITemplateManagerService {
 
     @Override
     public List<TemplateZoneModel> getTemplateZones(Integer templateId) {
-        /*
-        TemplateZoneExample example = new TemplateZoneExample();
-        TemplateZoneExample.Criteria criteria = example.createCriteria().andTemplateIdEqualTo(templateId);
-        if (env != null) criteria.andEnvEqualTo(env);
-        List<TemplateZone> tzs = templateZoneMapper.selectByExample(example);
-        List<Integer> zoneIds = new ArrayList<>();
-        tzs.forEach(item -> zoneIds.add(item.getZoneId()));
-        if (CollectionUtils.isEmpty(zoneIds)) return new ArrayList<>();
-
-        ZoneExample zoneExample = new ZoneExample();
-        zoneExample.createCriteria()
-                .andIdIn(zoneIds);
-        return zoneMapper.selectByExample(zoneExample);
-        */
         return templateZoneExtMapper.selectTemplateZoneModels(templateId);
+    }
+
+    @Override
+    public List<TemplateZoneModel> getTemplateZones(Integer templateId,Byte env) {
+        return templateZoneExtMapper.selectTemplateZoneModelsWithEvn(templateId,env);
     }
 
     @Override
