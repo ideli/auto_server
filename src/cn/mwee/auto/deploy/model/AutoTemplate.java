@@ -19,6 +19,14 @@ public class AutoTemplate {
     private String name;
 
     /**
+     * 模板类型：1，构建；2，部署；3，重启服务；4，停止服务；5，回滚
+     * templates.type
+     *
+     * @mbggenerated
+     */
+    private Byte type;
+
+    /**
      * 项目Id；为空时表示通用模板
      * templates.project_id
      *
@@ -142,6 +150,30 @@ public class AutoTemplate {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * 模板类型：1，构建；2，部署；3，重启服务；4，停止服务；5，回滚
+     * This method returns the value of the database column templates.type
+     *
+     * @return the value of templates.type
+     *
+     * @mbggenerated
+     */
+    public Byte getType() {
+        return type;
+    }
+
+    /**
+     * 模板类型：1，构建；2，部署；3，重启服务；4，停止服务；5，回滚
+     * This method sets the value of the database column templates.type
+     *
+     * @param type the value for templates.type
+     *
+     * @mbggenerated
+     */
+    public void setType(Byte type) {
+        this.type = type;
     }
 
     /**

@@ -1,6 +1,8 @@
 package cn.mwee.auto.deploy.service;
 
 import java.util.List;
+import java.util.Map;
+
 import cn.mwee.auto.deploy.contract.template.QueryTemplatesRequest;
 import cn.mwee.auto.deploy.contract.template.QueryTemplatesResult;
 import cn.mwee.auto.deploy.model.*;
@@ -31,6 +33,8 @@ public interface ITemplateManagerService {
 
     AutoTemplate getSubTemplate(int templateId);
 
+    AutoTemplate getSubTemplate(Integer templateId,Byte templateType,boolean isCreate);
+
     AutoTemplate createSubTemplate(int templateId);
 
     boolean removeTemplateTask(int templateTaskId);
@@ -43,6 +47,7 @@ public interface ITemplateManagerService {
 	 */
 	List<TemplateTask> getTemplateTasks(int templateId);
 
+    Map<String,List<TemplateTask>> getAllTemplateTasks(Integer parentTemplateId);
 
     /**
      * 获取-回滚模板-任务信息

@@ -246,6 +246,37 @@ public class TemplateManagerService implements ITemplateManagerService {
     }
 
     @Override
+    public AutoTemplate getSubTemplate(Integer templateId,Byte templateType,boolean isCreate) {
+        // 判断是否已有子模板
+        AutoTemplate subAutoTemplate;
+        AutoTemplateExample example = new AutoTemplateExample();
+        example.createCriteria()
+                .andPidEqualTo(templateId)
+                .andTypeEqualTo(templateType);
+        List<AutoTemplate> templates = autoTemplateMapper.selectByExample(example);
+        subAutoTemplate = templates.size() > 0 ? templates.get(0) : null;
+        if (subAutoTemplate == null && isCreate) {
+            subAutoTemplate = createSubTemplate(templateId,templateType);
+        }
+        return subAutoTemplate;
+    }
+
+    public AutoTemplate createSubTemplate(Integer pid,Byte templateType ) {
+        AutoTemplate parentTemplate = getTemplate(pid);
+
+        AutoTemplate subTemplate = new AutoTemplate();
+        subTemplate.setPid(pid);
+        subTemplate.setName("subTemplate-"+templateType);
+        subTemplate.setType(templateType);
+        subTemplate.setProjectId(parentTemplate.getProjectId());
+        subTemplate.setCreateTime(new Date());
+        subTemplate.setCreator(AuthUtils.getCurrUserName());
+        autoTemplateMapper.insertSelective(subTemplate);
+        changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMP, ChangeLog.OPERATE_TYPE_ADD, subTemplate.getId(),null, subTemplate);
+        return subTemplate;
+    }
+
+    @Override
     public AutoTemplate createSubTemplate(int templateId) {
         AutoTemplate autoTemplate = getTemplate(templateId);
 
@@ -278,6 +309,20 @@ public class TemplateManagerService implements ITemplateManagerService {
         example.setOrderByClause("`group` ASC,priority ASC");
         return templateTaskMapper.selectByExample(example);
     }
+
+    @Override
+    public Map<String,List<TemplateTask>> getAllTemplateTasks(Integer parentTemplateId) {
+        Map<String,List<TemplateTask>> result = new HashMap<>();
+        AutoTemplateExample example = new AutoTemplateExample();
+        example.createCriteria()
+                .andPidEqualTo(parentTemplateId)
+                .andInuseEqualTo(InUseType.IN_USE);
+        List<AutoTemplate> subTemplateList = autoTemplateMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(subTemplateList)) return result;
+        subTemplateList.forEach(subTemplate -> result.put(subTemplate.getType()+"",getTemplateTasks(subTemplate.getId())));
+        return result;
+    }
+
 
     @Override
     public List<TemplateTask> getRollbackTemplateTasks(int templateId) {

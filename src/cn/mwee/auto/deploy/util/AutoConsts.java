@@ -90,6 +90,14 @@ public class AutoConsts {
 
     }
 
+	public static class TemplateType {
+        public static final byte BUILD          = 1;    //构建
+        public static final byte DEPLOY         = 2;    //部署
+        public static final byte RESTART        = 3;    //重启服务
+        public static final byte STOP           = 4;    //停止服务
+        public static final byte ROLLBACK       = 5;    //回滚
+    }
+
 	public enum TaskState
 	{
 		INIT,ING,MANUAL,ERROR,TIMER,SUCCESS

@@ -107,8 +107,23 @@ public class TemplateController extends AutoAbstractController implements ITempl
     public NormalReturn addTask2Template(ServiceRequest request)
     {
         TemplateTask task = request.getModel();
+        AddTemplateTaskRequest req = request.getContract();
+        Integer templateId = req.getTemplateId();
+        Byte templateType = req.getTemplateType();
+        Integer subTemplateId = req.getSubTemplateId();
 
-        if(task.getGroup() == AutoConsts.GroupType.RollbackGroup)
+        if (subTemplateId == null || subTemplateId == 0){
+            AutoTemplate subTemplate = templateManagerService.getSubTemplate(templateId,templateType,true);
+            subTemplateId = subTemplate.getId();
+        }
+        if (templateManagerService.addTask2Template(subTemplateId,task)) {
+            return new NormalReturn("success");
+        } else {
+            return new NormalReturn("500","error");
+        }
+        /*
+
+        if(task.getGroup().byteValue() == AutoConsts.GroupType.RollbackGroup)
         {
             // 回滚组, init ? 初始化回滚组模板 : 添加回滚模板任务
             templateManagerService.addTask2RollbackTemplate(task.getTemplateId(),task);
@@ -119,6 +134,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
         }
 
         return new NormalReturn("success");
+        */
     }
 
     @Override
@@ -200,6 +216,11 @@ public class TemplateController extends AutoAbstractController implements ITempl
             //任务信息
             List<TemplateTask> templateTasks = templateManagerService.getTemplateTasks(templateId);
             result.put("templateTasks", templateTasks);
+
+            Map<String,List<TemplateTask>> templateTaskMap = templateManagerService.getAllTemplateTasks(templateId);
+            result.put("allTemplateTasks", templateTaskMap);
+
+
             //监控配置
             result.put("monitorInfo", templateManagerService.getTemplateZoneMonitor(templateId));
             //回滚模板数据
@@ -209,6 +230,9 @@ public class TemplateController extends AutoAbstractController implements ITempl
             Set<Integer> taskIds = new HashSet<>();
             templateTasks.forEach(templateTask -> taskIds.add(templateTask.getTaskId()));
             rollTemplateTasks.forEach(templateTask -> taskIds.add(templateTask.getTaskId()));
+
+            templateTaskMap.forEach((key, value) -> value.forEach(templateTask -> taskIds.add(templateTask.getTaskId())));
+
             result.put("autoTasks",taskManagerService.getAutoTasksByIds(taskIds));
             return new NormalReturn(result);
         }
