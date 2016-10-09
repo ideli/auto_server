@@ -90,19 +90,17 @@ public class FlowManagerService implements IFlowManagerService {
     @Override
     public Integer createFlow(FlowAddContract req) {
         Flow flow = createFlowSimple(req);
-        Map<String, Object> params = req.getParams() == null ? new HashMap<>() : req.getParams();
-        AutoTemplate template = templateManagerService.getTemplate(flow.getTemplateId());
-        if (template == null) {
-            throw new NullPointerException("未找到相应模板");
+        if (req.getPid() != null) {
+            Map<String, Object> params = req.getParams() == null ? new HashMap<>() : req.getParams();
+            flow.setParams(JSON.toJSONString(params));
+            flow.setIsreview(req.getEnv() == 3 ? FlowReviewType.Unreviewed : FlowReviewType.Ignore);
         }
-        flow.setIsreview(template.getReview() == 1 ? FlowReviewType.Unreviewed : FlowReviewType.Ignore);
         flow.setCreateTime(new Date());
         flow.setCreator(AuthUtils.getCurrUserName());
         flow.setOperater(flow.getCreator());
-        flow.setParams(JSON.toJSONString(params));
         flow.setState(TaskState.INIT.name());
         int result = flowMapper.insertSelective(flow);
-        if (result > 0 && req.getStrategyZoneSize() != null
+        if (result > 0 &&  req.getStrategyZoneSize() != null
                 && req.getStrategyInterval() != null) {
             FlowStrategy flowStrategy = new FlowStrategy();
             flowStrategy.setFlowId(flow.getId());

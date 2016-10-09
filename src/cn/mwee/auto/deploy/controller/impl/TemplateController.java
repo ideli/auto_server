@@ -166,7 +166,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
 
     @Override
     @Contract(TemplateIdQuery.class)
-    public NormalReturn getTemplateInfo(ServiceRequest request) {
+        public NormalReturn getTemplateInfo(ServiceRequest request) {
         TemplateIdQuery req = request.getContract();
         try {
             AutoTemplate template = templateManagerService.getTemplate(req.getTemplateId());
@@ -175,13 +175,16 @@ public class TemplateController extends AutoAbstractController implements ITempl
             }
             Map<String,Object> result = new HashMap<>();
             //基础信息
-            result.put("baseInfo",templateManagerService.getTemplate(req.getTemplateId()));
-            //区信息
-            result.put("zones", templateManagerService.getTemplateZones(req.getTemplateId(),req.getEnv()));
+            result.put("baseInfo",template);
+
+            if (req.getEnv() != null){
+                //区信息
+                result.put("zones", templateManagerService.getTemplateZones(req.getTemplateId(),req.getEnv()));
+                //任务参数key
+                result.put("taskParamKeys", templateManagerService.getTemplateTaskParamKeys(req.getTemplateId()));
+            }
             //任务信息
 //            result.put("tasks", templateManagerService.getTemplateSimpleTasks(req.getTemplateId()));
-            //任务参数key
-            result.put("taskParamKeys", templateManagerService.getTemplateTaskParamKeys(req.getTemplateId()));
             result.put("vcsInfo", templateManagerService.getGitRepInfo(template));
             Flow lastFlow = flowManagerService.getLastFlow(req.getTemplateId(),null);
             if (lastFlow != null) {

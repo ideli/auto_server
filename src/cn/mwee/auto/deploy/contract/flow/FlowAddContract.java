@@ -38,10 +38,19 @@ public class FlowAddContract extends BaseContract {
     @NotNull(message="未指定项目Id")
 	private Integer projectId;
 
+    /**
+     * 父流程Id
+     */
+    private Integer pid;
+
+	/**
+	 * 流程步骤
+	 */
+	private Byte flowStep;
+
 	/**
      *  区域
      */
-	@NotBlank(message="未指定区域")
 	private String zones;
 
     /**
@@ -52,13 +61,11 @@ public class FlowAddContract extends BaseContract {
     /**
      * 是否需要构建
      */
-    @Range(min = 0,max = 1,message = "参数不合法")
     private Byte needBuild;
 
     /**
      * 是否立即执行（0，否；1，是）
      */
-	@Range(min = 0,max = 1,message = "参数不合法")
     private byte exeNow;
 
 	/**

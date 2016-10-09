@@ -11,6 +11,14 @@ public class Flow {
     private Integer id;
 
     /**
+     * 父流程Id
+     * flows.pid
+     *
+     * @mbggenerated
+     */
+    private Integer pid;
+
+    /**
      * 流程名
      * flows.name
      *
@@ -33,6 +41,14 @@ public class Flow {
      * @mbggenerated
      */
     private Integer projectId;
+
+    /**
+     * 流程步骤
+     * flows.flow_step
+     *
+     * @mbggenerated
+     */
+    private Byte flowStep;
 
     /**
      * 区域Ip或host信息
@@ -157,6 +173,30 @@ public class Flow {
     }
 
     /**
+     * 父流程Id
+     * This method returns the value of the database column flows.pid
+     *
+     * @return the value of flows.pid
+     *
+     * @mbggenerated
+     */
+    public Integer getPid() {
+        return pid;
+    }
+
+    /**
+     * 父流程Id
+     * This method sets the value of the database column flows.pid
+     *
+     * @param pid the value for flows.pid
+     *
+     * @mbggenerated
+     */
+    public void setPid(Integer pid) {
+        this.pid = pid;
+    }
+
+    /**
      * 流程名
      * This method returns the value of the database column flows.name
      *
@@ -226,6 +266,30 @@ public class Flow {
      */
     public void setProjectId(Integer projectId) {
         this.projectId = projectId;
+    }
+
+    /**
+     * 流程步骤
+     * This method returns the value of the database column flows.flow_step
+     *
+     * @return the value of flows.flow_step
+     *
+     * @mbggenerated
+     */
+    public Byte getFlowStep() {
+        return flowStep;
+    }
+
+    /**
+     * 流程步骤
+     * This method sets the value of the database column flows.flow_step
+     *
+     * @param flowStep the value for flows.flow_step
+     *
+     * @mbggenerated
+     */
+    public void setFlowStep(Byte flowStep) {
+        this.flowStep = flowStep;
     }
 
     /**
