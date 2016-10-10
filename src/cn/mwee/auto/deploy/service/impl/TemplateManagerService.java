@@ -562,8 +562,8 @@ public class TemplateManagerService implements ITemplateManagerService {
     public List<AutoTemplate> getCanUseTemplate4Project(Integer projectId) {
         AutoTemplateExample example = new AutoTemplateExample();
         example.createCriteria()
-                .andInuseEqualTo((byte) 1).andProjectIdEqualTo(projectId);
-        example.or(example.createCriteria().andInuseEqualTo((byte) 1)
+                .andInuseEqualTo((byte) 1).andPidEqualTo(0).andProjectIdEqualTo(projectId);
+        example.or(example.createCriteria().andInuseEqualTo((byte) 1).andPidEqualTo(0)
                 .andProjectIdEqualTo(projectId));
         return autoTemplateMapper.selectByExample(example);
     }

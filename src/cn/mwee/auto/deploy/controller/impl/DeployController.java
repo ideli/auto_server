@@ -14,6 +14,7 @@ import cn.mwee.auto.deploy.contract.commom.BaseContract;
 import cn.mwee.auto.deploy.contract.flow.*;
 import cn.mwee.auto.deploy.model.*;
 import cn.mwee.auto.deploy.service.ITaskManagerService;
+import cn.mwee.auto.deploy.util.AutoConsts;
 import cn.mwee.auto.deploy.util.cache.JschChannelCache;
 import cn.mwee.auto.misc.aspect.contract.Model;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -55,11 +56,12 @@ public class DeployController implements IDeployController {
     public NormalReturn addFlow(ServiceRequest request) {
         FlowAddContract req = request.getContract();
         try {
-
             int flowId = flowManagerService.createFlow(req);
             if (flowId > 0) {
                 if (req.getExeNow() == 1) {
-                    flowManagerService.executeFlow(flowId);
+                    if (flowManagerService.executeFlow(flowId) && (req.getPid() != null && req.getPid() != 0)) {
+                        flowManagerService.updateFlowStepState(req.getPid(),req.getStep(),req.getStepState());
+                    }
                 }
                 return new NormalReturn("200", "success", flowId);
             } else {
@@ -252,6 +254,36 @@ public class DeployController implements IDeployController {
             return new NormalReturn("500", e.getMessage());
         }
     }
+
+    @Override
+    @Contract(FlowStartContract.class)
+    public NormalReturn getFlowDetail(ServiceRequest request) {
+        FlowStartContract req = request.getContract();
+        try {
+            Flow flow = flowManagerService.getFlow(req.getFlowId());
+            if (flow != null) {
+                Map<String, Object> result = new HashMap<>();
+                result.put("flowInfo", flow);
+                /*if ( ((flow.getFlowStep() & (byte)1) == 1) && (flow.getCurrentStep() == null || flow.getCurrentStep() == 0)) {
+                    AutoTemplate buildTemplate = templateManagerService.getSubTemplate(flow.getTemplateId(), AutoConsts.TemplateType.BUILD,false);
+                    if (buildTemplate == null) {
+                        return new NormalReturn("500", "模板未配置构建任务，模板Id：["+flow.getTemplateId()+"]");
+                    }
+                    result.put("subTemplate", buildTemplate);
+                    result.put("taskParamKeys", templateManagerService.getTemplateTaskParamKeys(buildTemplate.getId()));
+                }*/
+                result.put("subFlowList", flowManagerService.getSubFlowList(req.getFlowId()));
+                return new NormalReturn("200", "success", result);
+            } else {
+                return new NormalReturn("500", "flow not exists for id[" + req.getFlowId() + "]");
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+            return new NormalReturn("500", e.getMessage());
+        }
+    }
+
+
 
     @Override
     @Contract(BaseContract.class)

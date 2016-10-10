@@ -51,6 +51,14 @@ public class Flow {
     private Byte flowStep;
 
     /**
+     * 流程当前步骤
+     * flows.step_state
+     *
+     * @mbggenerated
+     */
+    private Integer stepState;
+
+    /**
      * 区域Ip或host信息
      * flows.zones
      *
@@ -290,6 +298,30 @@ public class Flow {
      */
     public void setFlowStep(Byte flowStep) {
         this.flowStep = flowStep;
+    }
+
+    /**
+     * 流程当前步骤
+     * This method returns the value of the database column flows.step_state
+     *
+     * @return the value of flows.step_state
+     *
+     * @mbggenerated
+     */
+    public Integer getStepState() {
+        return stepState;
+    }
+
+    /**
+     * 流程当前步骤
+     * This method sets the value of the database column flows.step_state
+     *
+     * @param stepState the value for flows.step_state
+     *
+     * @mbggenerated
+     */
+    public void setStepState(Integer stepState) {
+        this.stepState = stepState;
     }
 
     /**

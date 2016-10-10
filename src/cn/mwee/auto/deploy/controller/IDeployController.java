@@ -22,6 +22,7 @@ public interface IDeployController extends IController {
 	 * @return
 	 */
 	NormalReturn addFlow(ServiceRequest request);
+
 	/**
 	 * 执行流程
 	 * @param request
@@ -99,6 +100,13 @@ public interface IDeployController extends IController {
      * @return
      */
     NormalReturn getFlowInfo(ServiceRequest request);
+
+	/**
+	 * 获取流程信息
+	 * @param request
+	 * @return
+	 */
+	NormalReturn getFlowDetail(ServiceRequest request);
 
 	/**
 	 * 获取流程信息

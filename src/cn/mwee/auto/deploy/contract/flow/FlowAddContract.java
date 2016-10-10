@@ -49,6 +49,16 @@ public class FlowAddContract extends BaseContract {
 	private Byte flowStep;
 
 	/**
+	 * 步骤
+	 */
+	private Byte step;
+
+    /**
+     * 当前步骤
+     */
+    private Integer stepState;
+
+	/**
      *  区域
      */
 	private String zones;

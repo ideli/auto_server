@@ -47,6 +47,12 @@ public interface IFlowManagerService {
      */
     boolean updateFlowStatus(int flowId);
 
+    /**
+     *
+     * @return
+     */
+    boolean updateFlowStepState(int flowId,byte step,Integer stepState);
+
 
     /**
      * 查找当前组下一个任务
@@ -148,6 +154,13 @@ public interface IFlowManagerService {
 	 * @return
      */
 	FlowStrategy getFlowStrategy(Integer flowId);
+
+	/**
+	 * 获取流程执行策略
+	 * @param flowId 流程Id
+	 * @return
+	 */
+	List<Flow> getSubFlowList(Integer flowId);
 
     /**
      * 审核流程

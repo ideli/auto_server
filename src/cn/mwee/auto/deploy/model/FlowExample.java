@@ -621,6 +621,66 @@ public class FlowExample {
             return (Criteria) this;
         }
 
+        public Criteria andStepStateIsNull() {
+            addCriterion("step_state is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateIsNotNull() {
+            addCriterion("step_state is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateEqualTo(Integer value) {
+            addCriterion("step_state =", value, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateNotEqualTo(Integer value) {
+            addCriterion("step_state <>", value, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateGreaterThan(Integer value) {
+            addCriterion("step_state >", value, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateGreaterThanOrEqualTo(Integer value) {
+            addCriterion("step_state >=", value, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateLessThan(Integer value) {
+            addCriterion("step_state <", value, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateLessThanOrEqualTo(Integer value) {
+            addCriterion("step_state <=", value, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateIn(List<Integer> values) {
+            addCriterion("step_state in", values, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateNotIn(List<Integer> values) {
+            addCriterion("step_state not in", values, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateBetween(Integer value1, Integer value2) {
+            addCriterion("step_state between", value1, value2, "stepState");
+            return (Criteria) this;
+        }
+
+        public Criteria andStepStateNotBetween(Integer value1, Integer value2) {
+            addCriterion("step_state not between", value1, value2, "stepState");
+            return (Criteria) this;
+        }
+
         public Criteria andZonesIsNull() {
             addCriterion("zones is null");
             return (Criteria) this;

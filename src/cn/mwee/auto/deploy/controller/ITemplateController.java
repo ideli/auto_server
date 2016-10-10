@@ -37,6 +37,7 @@ public interface ITemplateController extends IController  {
      */
     NormalReturn getTemplateInfo(ServiceRequest request);
 
+    NormalReturn getSubTemplateInfo(ServiceRequest request);
     /**
      * 获取模板详细信息
      * @return

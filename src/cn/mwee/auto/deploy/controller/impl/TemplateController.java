@@ -198,6 +198,34 @@ public class TemplateController extends AutoAbstractController implements ITempl
     }
 
     @Override
+    @Contract(SubTemplateQuery.class)
+    public NormalReturn getSubTemplateInfo(ServiceRequest request) {
+        SubTemplateQuery req = request.getContract();
+        try {
+            Flow flow = flowManagerService.getFlow(req.getFlowId());
+            if (flow == null) return new NormalReturn("500","未找到流程["+req.getFlowId()+"]");
+            AutoTemplate template = templateManagerService.getSubTemplate(flow.getTemplateId(),req.getType(),false);
+            if (template == null) return new NormalReturn("500","未配置相应子模板["+flow.getTemplateId()+"]");
+
+            Map<String,Object> result = new HashMap<>();
+            //基础信息
+            result.put("baseInfo",template);
+
+            if (req.getType() == 2){
+                //区信息从父模板中取
+                result.put("zones", templateManagerService.getTemplateZones(template.getPid(),req.getEnv()));
+            }
+            //任务参数key
+            result.put("taskParamKeys", templateManagerService.getTemplateTaskParamKeys(template.getId()));
+
+            return new NormalReturn("200","success",result);
+        } catch (Exception e) {
+            logger.error("",e);
+            return new NormalReturn("500","error",e.getMessage());
+        }
+    }
+
+    @Override
     @Contract(TemplateIdQuery.class)
     public NormalReturn getTemplateDetail(ServiceRequest request)
     {

@@ -98,6 +98,13 @@ public class AutoConsts {
         public static final byte ROLLBACK       = 5;    //回滚
     }
 
+    public static class Env {
+        public static final byte DEV            = 0;    //开发
+        public static final byte TEST           = 1;    //测试
+        public static final byte UAT            = 2;    //uat
+        public static final byte PROD           = 3;    //生产
+    }
+
 	public enum TaskState
 	{
 		INIT,ING,MANUAL,ERROR,TIMER,SUCCESS
