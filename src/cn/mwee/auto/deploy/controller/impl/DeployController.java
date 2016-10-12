@@ -58,9 +58,9 @@ public class DeployController implements IDeployController {
         try {
             int flowId = flowManagerService.createFlow(req);
             if (flowId > 0) {
+                flowManagerService.updateFlowStepState(req.getPid(),req.getStep(),req.getStepState());
                 if (req.getExeNow() == 1) {
                     if (flowManagerService.executeFlow(flowId) && (req.getPid() != null && req.getPid() != 0)) {
-                        flowManagerService.updateFlowStepState(req.getPid(),req.getStep(),req.getStepState());
                     }
                 }
                 return new NormalReturn("200", "success", flowId);
@@ -175,6 +175,20 @@ public class DeployController implements IDeployController {
             return new NormalReturn("200", e.getMessage(), "error");
         }
     }
+
+    @Override
+    @Model(contract = SubFlowQueryContract.class, model = Flow.class)
+    public NormalReturn getSubFlows(ServiceRequest request) {
+        SubFlowQueryContract req = request.getContract();
+        Flow model = request.getModel();
+        try {
+            return new NormalReturn("200", "success", flowManagerService.getSubFlows(req, model));
+        } catch (Exception e) {
+            logger.error("", e);
+            return new NormalReturn("200", e.getMessage(), "error");
+        }
+    }
+
 
     @Override
     @Contract(ExecuteFlowTaskContract.class)

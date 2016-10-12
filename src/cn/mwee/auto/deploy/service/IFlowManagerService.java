@@ -3,6 +3,7 @@ package cn.mwee.auto.deploy.service;
 import cn.mwee.auto.common.db.BaseQueryResult;
 import cn.mwee.auto.deploy.contract.flow.FlowAddContract;
 import cn.mwee.auto.deploy.contract.flow.FlowQueryContract;
+import cn.mwee.auto.deploy.contract.flow.SubFlowQueryContract;
 import cn.mwee.auto.deploy.model.Flow;
 import cn.mwee.auto.deploy.model.FlowStrategy;
 import cn.mwee.auto.deploy.model.FlowTask;
@@ -139,7 +140,13 @@ public interface IFlowManagerService {
 	 * 获取流程列表
 	 * @return
 	 */
-    BaseQueryResult<Flow> getFlows(FlowQueryContract req, Flow flow);
+	BaseQueryResult<Flow> getFlows(FlowQueryContract req, Flow flow);
+
+	/**
+	 * 获取流程列表
+	 * @return
+	 */
+	BaseQueryResult<Flow> getSubFlows(SubFlowQueryContract req, Flow flow);
 
     /**
      * 获取流程

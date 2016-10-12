@@ -8,6 +8,7 @@ import cn.mwee.auto.common.db.BaseQueryResult;
 import cn.mwee.auto.common.util.DateUtil;
 import cn.mwee.auto.deploy.contract.flow.FlowAddContract;
 import cn.mwee.auto.deploy.contract.flow.FlowQueryContract;
+import cn.mwee.auto.deploy.contract.flow.SubFlowQueryContract;
 import cn.mwee.auto.deploy.dao.*;
 import cn.mwee.auto.deploy.model.*;
 import cn.mwee.auto.deploy.service.IFlowManagerService;
@@ -123,7 +124,7 @@ public class FlowManagerService implements IFlowManagerService {
         flow.setTemplateId(req.getTemplateId());
         flow.setProjectId(req.getProjectId());
         flow.setFlowStep(req.getFlowStep());
-        if (req.getPid() !=null && (req.getStepState() & 3 )== 1) {
+        if (req.getPid() !=null && (req.getStep() & 1 )== 1) {
             flow.setZones(localHost);
         } else {
             flow.setZones(req.getZones());
@@ -137,9 +138,9 @@ public class FlowManagerService implements IFlowManagerService {
     public boolean executeFlow(int flowId) throws Exception {
         Flow flow = flowMapper.selectByPrimaryKey(flowId);
         //判断
-        if (!canExecute(flow)) {
+        /*if (!canExecute(flow)) {
             throw new Exception("执行失败");
-        }
+        }*/
         if (initFlowTasks(flowId) && startFlow(flowId)) {
             flow.setState(TaskState.ING.name());
             flow.setOperater(SecurityUtils.getSubject().getPrincipal() == null ? "system" : SecurityUtils.getSubject().getPrincipal().toString());
@@ -348,10 +349,15 @@ public class FlowManagerService implements IFlowManagerService {
 
     @Override
     public boolean updateFlowStepState(int flowId,byte step,Integer stepState) {
+        int i;
+        for (i=0; i<5; i++) {
+            int t = step >> i;
+            if (step >> i == 1) break;
+        }
         Flow oldFlow = getFlow(flowId);
         Flow flow = new Flow();
         flow.setId(flowId);
-        flow.setStepState((oldFlow.getStepState()&(3<<((step-1)*2)))|stepState);
+        flow.setStepState((oldFlow.getStepState()&(~(3<<(i*2)))) | (stepState << (i*2)));
         return flowMapper.updateByPrimaryKeySelective(flow)>0;
     }
 
@@ -366,15 +372,25 @@ public class FlowManagerService implements IFlowManagerService {
         Flow flowTmp = new Flow();
         flowTmp.setId(flow.getId());
         flowTmp.setState(stateNew);
+        if (TaskState.SUCCESS.name().equals(stateNew)) {
+            flowTmp.setStepState(2);
+        } else if (TaskState.ERROR.name().equals(stateNew)) {
+            flowTmp.setStepState(3);
+        }
+
         int result = flowMapper.updateByPrimaryKeySelective(flowTmp);
         if (result > 0) {
             flowTmp.setUpdateTime(new Date());
             flowMapper.updateByPrimaryKeySelective(flowTmp);
             if (TaskState.SUCCESS.name().equals(stateNew) ||
                     TaskState.ERROR.name().equals(stateNew)) {
+                if (flow.getPid()!= null && flow.getPid() != 0) {
+                    updateFlowStepState(flow.getPid(),flow.getFlowStep(),flowTmp.getStepState());
+                }
                 sendNoticeMail(flow, stateNew);
-                if (flow.getNeedbuild() == 0)
+                if (flow.getNeedbuild() == 0) {
                     statsDClientUtils.sendFlowExecutionTime(flowId);
+                }
             }
         }
         return true;
@@ -730,6 +746,22 @@ public class FlowManagerService implements IFlowManagerService {
     }
 
     @Override
+    public BaseQueryResult<Flow> getSubFlows(SubFlowQueryContract req, Flow flow) {
+        FlowExample example = new FlowExample();
+        FlowExample.Criteria criteria = example.createCriteria();
+        criteria.andPidEqualTo(req.getPid());
+        criteria.andEnvEqualTo(req.getEnv());
+        example.setOrderByClause("id DESC");
+
+        if (req.getCreateDateS() != null) criteria.andCreateTimeGreaterThanOrEqualTo(req.getCreateDateS());
+        if (req.getCreateDateE() != null) criteria.andCreateTimeLessThanOrEqualTo(req.getCreateDateE());
+        if (req.getFlowId() != null) criteria.andIdEqualTo(req.getFlowId());
+        if (StringUtils.isNotBlank(req.getZone())) criteria.andZonesLike(SqlUtils.wrapLike(req.getZone()));
+        if (CollectionUtils.isNotEmpty(req.getState())) criteria.andStateIn(req.getState());
+        return BaseModel.selectByPage(flowMapper, example, req.getPage(), req.getPage() == null);
+    }
+
+    @Override
     public Flow getFlow(Integer flowId) {
         return flowMapper.selectByPrimaryKey(flowId);
     }
@@ -851,11 +883,14 @@ public class FlowManagerService implements IFlowManagerService {
 //        String[] strs = "".split(",");
        /* Integer i = null;
         System.out.println(i > 0);*/
-        Date exeDate = new Date();
+       /* Date exeDate = new Date();
         Date tmpDate = DateUtil.addMinutes(exeDate, 1);
 
         System.out.println("args = [" + tmpDate.after(new Date()) + "]");
+*/
 
+        int old = 0x01a;
+        System.out.println(1<<6);
 
     }
 }

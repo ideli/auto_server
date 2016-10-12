@@ -65,6 +65,14 @@ public interface IDeployController extends IController {
 	 * @return
 	 */
 	NormalReturn getFlows(ServiceRequest request);
+
+	/**
+	 * 子流程列表
+	 * @param request
+	 * @return
+	 */
+	NormalReturn getSubFlows(ServiceRequest request);
+
 	/**
 	 * 流程任务日志
 	 * @param request

@@ -211,7 +211,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
             //基础信息
             result.put("baseInfo",template);
 
-            if (req.getType() == 2){
+            if (req.getType() >= 2){
                 //区信息从父模板中取
                 result.put("zones", templateManagerService.getTemplateZones(template.getPid(),req.getEnv()));
             }
