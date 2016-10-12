@@ -41,7 +41,8 @@ public class FlowTaskLogService implements IFlowTaskLogService {
 		flowTaskLog.setPriority(flowTask.getPriority());
 		String exec = task.getExec() == null? "" : task.getExec() ;
 		String param = flowTask.getTaskParam() == null? "" : flowTask.getTaskParam();
-		flowTaskLog.setTaskInfo(exec + " " + param);
+//		flowTaskLog.setTaskInfo(exec + " " + param);
+		flowTaskLog.setTaskInfo(param);
 		flowTaskLog.setLog("");
 		flowTaskLog.setCreateTime(new Date());
 		flowTaskLogMapper.insertSelective(flowTaskLog);
