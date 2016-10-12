@@ -44,6 +44,7 @@ public class AutoConsts {
 		public static final Byte PreGroup		= 0;
 		public static final Byte PostGroup 		= Byte.MAX_VALUE;
 
+		public static final Byte BuildGroup   = 88;
 		public static final Byte RollbackGroup   = -2;
 
 	}

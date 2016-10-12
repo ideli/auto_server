@@ -38,6 +38,8 @@ public class FlowAddContract extends BaseContract {
     @NotNull(message="未指定项目Id")
 	private Integer projectId;
 
+    private Byte type;
+
     /**
      * 父流程Id
      */

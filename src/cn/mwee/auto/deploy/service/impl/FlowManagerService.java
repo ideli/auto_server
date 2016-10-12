@@ -123,6 +123,7 @@ public class FlowManagerService implements IFlowManagerService {
         flow.setEnv(req.getEnv());
         flow.setTemplateId(req.getTemplateId());
         flow.setProjectId(req.getProjectId());
+        flow.setType(req.getType());
         flow.setFlowStep(req.getFlowStep());
         if (req.getPid() !=null && (req.getStep() & 1 )== 1) {
             flow.setZones(localHost);
@@ -138,9 +139,9 @@ public class FlowManagerService implements IFlowManagerService {
     public boolean executeFlow(int flowId) throws Exception {
         Flow flow = flowMapper.selectByPrimaryKey(flowId);
         //判断
-        /*if (!canExecute(flow)) {
+        if (!canExecute(flow)) {
             throw new Exception("执行失败");
-        }*/
+        }
         if (initFlowTasks(flowId) && startFlow(flowId)) {
             flow.setState(TaskState.ING.name());
             flow.setOperater(SecurityUtils.getSubject().getPrincipal() == null ? "system" : SecurityUtils.getSubject().getPrincipal().toString());
@@ -174,9 +175,14 @@ public class FlowManagerService implements IFlowManagerService {
 
         //get flow
         Flow flow = flowMapper.selectByPrimaryKey(flowId);
+        Flow pFlow = null;
         if (flow == null) {
             throw new NullPointerException("Cant find flow for id:" + flowId);
         }
+        if (flow.getPid()!=null && flow.getPid() != 0) {
+            pFlow = flowMapper.selectByPrimaryKey(flow.getPid());
+        }
+
         FlowStrategy flowStrategy = getFlowStrategy4Flow(flowId);
         //get template
         AutoTemplate template = templateManagerService.getTemplate(flow.getTemplateId());
@@ -222,12 +228,39 @@ public class FlowManagerService implements IFlowManagerService {
             for (int i = 0; i < zones.length; i++) {
                 if (StringUtils.isBlank(zones[i])) continue;
                 flowParamMap.put("%zoneIndex%", (i + 1) + "");
-                FlowTask flowTask = buildFlowTask(tt, flowId, zones[i], flowParamMap, userParamsMap);
-                if (flowTask != null) {
-                    if (flowStrategy != null) {
-                        calStrategy(flowTask, i, zoneStartTaskMap, flowStrategy);
+                //构建模板的构建任务单独出来
+                if (flow.getType() == TemplateType.BUILD && tt.getGroup().equals(GroupType.BuildGroup) && pFlow != null) {
+                    Byte flowStep = pFlow.getFlowStep();
+                    for (int l=1; l< 5 ;l++) {
+                        int step =flowStep & (1<< l) ;
+                        if (step == 0) continue;
+                        switch (step) {
+                            case 2 :
+                                flowParamMap.put("%env%", "dev");
+                                break;
+                            case 4 :
+                                flowParamMap.put("%env%", "test");
+                                break;
+                            case 8 :
+                                flowParamMap.put("%env%", "uat");
+                                break;
+                            case 16 :
+                                flowParamMap.put("%env%", "prod");
+                                break;
+                        }
+                        short priority = (short) (tt.getPriority() + 1);
+                        tt.setPriority(priority);
+                        FlowTask flowTask = buildFlowTask(tt, flowId, zones[i], flowParamMap, userParamsMap);
+                        fts.add(flowTask);
                     }
-                    fts.add(flowTask);
+                } else {
+                    FlowTask flowTask = buildFlowTask(tt, flowId, zones[i], flowParamMap, userParamsMap);
+                    if (flowTask != null) {
+                        if (flowStrategy != null) {
+                            calStrategy(flowTask, i, zoneStartTaskMap, flowStrategy);
+                        }
+                        fts.add(flowTask);
+                    }
                 }
             }
             /*
@@ -268,12 +301,13 @@ public class FlowManagerService implements IFlowManagerService {
      */
     private FlowTask buildFlowTask(TemplateTask tt, Integer flowId, String zone,
                                    Map<String, String> flowParamMap, Map<String, String> userParamsMap) {
-        String paramStr = "";
         AutoTask task = autoTaskMapper.selectByPrimaryKey(tt.getTaskId());
         if (task == null) return null;
+        String paramStr = task.getExec() + " ";
         if (StringUtils.isNotBlank(task.getParams())) {
-            paramStr = task.getParams();
+            paramStr += task.getParams();
         }
+        paramStr=paramStr.replaceAll("[\\t\\n\\r]", " ");
         FlowTask ft = new FlowTask();
         ft.setGroup(tt.getGroup());
         ft.setPriority(tt.getPriority());
@@ -323,6 +357,8 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%vcsType%", pTemplate.getVcsType());
         flowParamMap.put("%vcsRep%", pTemplate.getVcsRep());
         flowParamMap.put("%vcsBranch%", pFlow.getVcsBranch());
+        flowParamMap.put("%flowStep%", pFlow.getFlowStep()+"");
+
         String repUrl = pTemplate.getVcsRep();
         if (StringUtils.isNotBlank(repUrl)
                 && StringUtils.isNotBlank(pFlow.getVcsBranch())) {
@@ -351,7 +387,6 @@ public class FlowManagerService implements IFlowManagerService {
     public boolean updateFlowStepState(int flowId,byte step,Integer stepState) {
         int i;
         for (i=0; i<5; i++) {
-            int t = step >> i;
             if (step >> i == 1) break;
         }
         Flow oldFlow = getFlow(flowId);
@@ -384,7 +419,7 @@ public class FlowManagerService implements IFlowManagerService {
             flowMapper.updateByPrimaryKeySelective(flowTmp);
             if (TaskState.SUCCESS.name().equals(stateNew) ||
                     TaskState.ERROR.name().equals(stateNew)) {
-                if (flow.getPid()!= null && flow.getPid() != 0) {
+                if (flow.getPid()!= null && flow.getPid() != 0 && (flow.getType() == 1 || flow.getType() == 2)) {
                     updateFlowStepState(flow.getPid(),flow.getFlowStep(),flowTmp.getStepState());
                 }
                 sendNoticeMail(flow, stateNew);
@@ -889,8 +924,12 @@ public class FlowManagerService implements IFlowManagerService {
         System.out.println("args = [" + tmpDate.after(new Date()) + "]");
 */
 
-        int old = 0x01a;
-        System.out.println(1<<6);
+        /*int old = 0x01a;
+        System.out.println(1<<6);*/
+        String paramStr = "ea\tb\nc\rd";
+        System.out.println(paramStr);
+        paramStr=paramStr.replaceAll("[\\t\\n\\r]", " ");
+        System.out.println(paramStr);
 
     }
 }

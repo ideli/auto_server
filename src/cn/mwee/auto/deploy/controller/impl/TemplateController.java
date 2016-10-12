@@ -116,6 +116,14 @@ public class TemplateController extends AutoAbstractController implements ITempl
             AutoTemplate subTemplate = templateManagerService.getSubTemplate(templateId,templateType,true);
             subTemplateId = subTemplate.getId();
         }
+
+        if (req.getTemplateType() !=null
+                &&req.getTemplateType() == AutoConsts.TemplateType.BUILD
+                &&AutoConsts.GroupType.BuildGroup.equals(req.getGroup())){
+            if ((templateManagerService.getTemplateTasks(subTemplateId,req.getGroup()).size() > 0)) {
+                return new NormalReturn("500","构建模板的构建组中只能配置一个构建任务！");
+            }
+        }
         if (templateManagerService.addTask2Template(subTemplateId,task)) {
             return new NormalReturn("success");
         } else {
@@ -150,6 +158,15 @@ public class TemplateController extends AutoAbstractController implements ITempl
     @Model(contract = ModifyTemplateTaskRequest.class, model = TemplateTask.class)
     public NormalReturn modifyTemplateTask(ServiceRequest request)
     {
+        ModifyTemplateTaskRequest req = request.getContract();
+        if ( req.getTemplateType() !=null
+                && req.getTemplateType() ==AutoConsts.TemplateType.BUILD
+                && AutoConsts.GroupType.BuildGroup.equals(req.getGroup())){
+            if ((templateManagerService.getTemplateTasks(req.getSubTemplateId(),req.getGroup()).size() > 0)) {
+                return new NormalReturn("500","构建模板的构建组中只能配置一个构建任务！");
+            }
+        }
+
         TemplateTask templateTask = request.getModel();
         boolean modifySuccess = templateManagerService.modifyTemplateTask(templateTask);
         return new NormalReturn(modifySuccess);

@@ -58,10 +58,11 @@ public class DeployController implements IDeployController {
         try {
             int flowId = flowManagerService.createFlow(req);
             if (flowId > 0) {
-                flowManagerService.updateFlowStepState(req.getPid(),req.getStep(),req.getStepState());
+                if (req.getPid() != null && req.getPid() != 0 && (req.getTemplateId() == 1 || req.getType() == 2)) {
+                    flowManagerService.updateFlowStepState(req.getPid(),req.getStep(),req.getStepState());
+                }
                 if (req.getExeNow() == 1) {
-                    if (flowManagerService.executeFlow(flowId) && (req.getPid() != null && req.getPid() != 0)) {
-                    }
+                    flowManagerService.executeFlow(flowId);
                 }
                 return new NormalReturn("200", "success", flowId);
             } else {

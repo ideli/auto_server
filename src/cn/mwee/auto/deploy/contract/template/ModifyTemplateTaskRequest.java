@@ -23,4 +23,9 @@ public class ModifyTemplateTaskRequest {
 
     private String taskType;
 
+    private Integer subTemplateId;
+
+    private Byte templateType;
+
+
 }

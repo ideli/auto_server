@@ -39,7 +39,15 @@ public interface ITemplateManagerService {
 
     boolean removeTemplateTask(int templateTaskId);
 
+    boolean removeTemplateTaskLogic(int templateTaskId);
+
     boolean modifyTemplateTask(TemplateTask task);
+
+    /**
+     * 获取模板任务信息
+     * @return
+     */
+    TemplateTask getTemplateTask(int templateTaskId);
 
 	/**
 	 * 获取模板任务信息
@@ -47,6 +55,16 @@ public interface ITemplateManagerService {
 	 */
 	List<TemplateTask> getTemplateTasks(int templateId);
 
+    /**
+     * 获取模板组任务信息
+     * @return
+     */
+    List<TemplateTask> getTemplateTasks(int templateId,Byte group);
+
+    /**
+     * 获取模板任务信息
+     * @return
+     */
     Map<String,List<TemplateTask>> getAllTemplateTasks(Integer parentTemplateId);
 
     /**

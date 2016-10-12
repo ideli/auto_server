@@ -142,6 +142,16 @@ public class TemplateManagerService implements ITemplateManagerService {
 
     @Override
     public boolean removeTemplateTask(int templateTaskId) {
+        TemplateTask changeBefore = templateTaskMapper.selectByPrimaryKey(templateTaskId);
+        boolean result = templateTaskMapper.deleteByPrimaryKey(templateTaskId) > 0;
+        if (result) {
+            changeLogService.addChangeLogAsyn(ChangeLog.LOG_TYPE_TEMPTASK, ChangeLog.OPERATE_TYPE_DEL, templateTaskId, changeBefore, null);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean removeTemplateTaskLogic(int templateTaskId) {
         TemplateTask task = new TemplateTask();
         task.setInuse(InUseType.NOT_USE);
         task.setId(templateTaskId);
@@ -261,6 +271,13 @@ public class TemplateManagerService implements ITemplateManagerService {
         return subAutoTemplate;
     }
 
+    private List<AutoTemplate> getSubTemplateList(Integer templateId) {
+        AutoTemplateExample example = new AutoTemplateExample();
+        example.createCriteria()
+                .andPidEqualTo(templateId);
+        return autoTemplateMapper.selectByExample(example);
+    }
+
     public AutoTemplate createSubTemplate(Integer pid,Byte templateType ) {
         AutoTemplate parentTemplate = getTemplate(pid);
 
@@ -299,6 +316,10 @@ public class TemplateManagerService implements ITemplateManagerService {
         return rollbackTemplate;
     }
 
+    @Override
+    public TemplateTask getTemplateTask(int templateTaskId) {
+        return templateTaskMapper.selectByPrimaryKey(templateTaskId);
+    }
 
     @Override
     public List<TemplateTask> getTemplateTasks(int templateId) {
@@ -307,6 +328,17 @@ public class TemplateManagerService implements ITemplateManagerService {
         c.andTemplateIdEqualTo(templateId);
         c.andInuseEqualTo(InUseType.IN_USE);
         example.setOrderByClause("`group` ASC,priority ASC");
+        return templateTaskMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<TemplateTask> getTemplateTasks(int templateId, Byte group) {
+        TemplateTaskExample example = new TemplateTaskExample();
+        example.createCriteria()
+                .andTemplateIdEqualTo(templateId)
+                .andGroupEqualTo(group)
+                .andInuseEqualTo(InUseType.IN_USE);
+        example.setOrderByClause("priority ASC");
         return templateTaskMapper.selectByExample(example);
     }
 
@@ -453,22 +485,35 @@ public class TemplateManagerService implements ITemplateManagerService {
     @Override
     public void cloneTemplate(Integer templateId, String suffixName, Integer cloneType) {
         AutoTemplate template = getTemplate(templateId);
-        List<TemplateTask> ttList = getTemplateTasks(templateId);
         /**复制基本信息**/
         Integer newTemplateId = cloneTemplate(template, suffixName, 0, cloneType);
-        /**clone任务信息**/
+
+        List<AutoTemplate> subTemplateList = getSubTemplateList(templateId);
+
+        subTemplateList.forEach(subTemplate -> {
+            Integer newSubTemplateId = cloneTemplate(subTemplate, suffixName, newTemplateId, cloneType);
+            List<TemplateTask> ttList = getTemplateTasks(subTemplate.getId());
+            if (ttList.size() > 0){
+                cloneTemplateTaskInfo(ttList, newSubTemplateId, suffixName, cloneType);
+            }
+        });
+
+
+        /**clone任务信息**//*
+        List<TemplateTask> ttList = getTemplateTasks(templateId);
         cloneTemplateTaskInfo(ttList, newTemplateId, suffixName, cloneType);
 
-        /**克隆回滚模板**/
+        *//**克隆回滚模板**//*
         AutoTemplate rollBackTemplate = getSubTemplate(templateId);
         if (rollBackTemplate != null) {
             String rollBackTemplateName = cloneType == 2 ? suffixName : ("回滚-" + suffixName);
-            /**复制基本信息**/
+            *//**复制基本信息**//*
             Integer newRollBackTemplateId = cloneTemplate(rollBackTemplate, rollBackTemplateName, newTemplateId, cloneType);
             List<TemplateTask> rollBackTtList = getTemplateTasks(rollBackTemplate.getId());
-            /**clone任务信息**/
+            *//**clone任务信息**//*
             cloneTemplateTaskInfo(rollBackTtList, newRollBackTemplateId, suffixName, cloneType);
         }
+        */
     }
 
     private void cloneTemplateTaskInfo(List<TemplateTask> ttList, Integer newTemplateId, String suffixName, Integer cloneType) {
@@ -486,7 +531,9 @@ public class TemplateManagerService implements ITemplateManagerService {
     private Integer cloneTemplate(AutoTemplate template, String templateName, Integer pId, Integer cloneType) {
         AutoTemplate templateClone = new AutoTemplate();
         String newTemplateName = (cloneType == 1 ? templateName : (template.getName() + "-" + templateName));
+        newTemplateName = pId == 0 ? newTemplateName : template.getName();
         templateClone.setName(newTemplateName);
+        templateClone.setType(template.getType());
         templateClone.setProjectId(template.getProjectId());
         templateClone.setVcsType(template.getVcsType());
         templateClone.setVcsRep(template.getVcsRep());

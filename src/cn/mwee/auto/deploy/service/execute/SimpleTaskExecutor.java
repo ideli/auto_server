@@ -127,8 +127,8 @@ public class SimpleTaskExecutor implements TaskExecutor {
         try {
             String shell = StringUtils.isNotBlank(task.getExec()) ? task.getExec() : "";
             String taskParam = StringUtils.isNotBlank(flowTask.getTaskParam()) ? flowTask.getTaskParam() : "";
-            String command = shell + " " + taskParam;
-
+//            String command = shell + " " + taskParam;
+            String command = taskParam;
             //获取脚步执行用户
             String sshShellUser = task.getExecUser();
             String sshPriAddr = sshAuthMap.get(sshShellUser);

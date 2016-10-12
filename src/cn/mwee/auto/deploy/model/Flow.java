@@ -43,6 +43,14 @@ public class Flow {
     private Integer projectId;
 
     /**
+     * 类型
+     * flows.type
+     *
+     * @mbggenerated
+     */
+    private Byte type;
+
+    /**
      * 流程步骤
      * flows.flow_step
      *
@@ -274,6 +282,30 @@ public class Flow {
      */
     public void setProjectId(Integer projectId) {
         this.projectId = projectId;
+    }
+
+    /**
+     * 类型
+     * This method returns the value of the database column flows.type
+     *
+     * @return the value of flows.type
+     *
+     * @mbggenerated
+     */
+    public Byte getType() {
+        return type;
+    }
+
+    /**
+     * 类型
+     * This method sets the value of the database column flows.type
+     *
+     * @param type the value for flows.type
+     *
+     * @mbggenerated
+     */
+    public void setType(Byte type) {
+        this.type = type;
     }
 
     /**
