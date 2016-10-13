@@ -35,7 +35,7 @@ public class ProjectController implements IProjectController {
     private ITemplateManagerService templateManagerService;
 
     @Override
-    @RequiresPermissions(value = "/project/addProject", logical = Logical.OR)
+//    @RequiresPermissions(value = "/project/addProject", logical = Logical.OR)
     @Contract(ProjectAddContract.class)
     public NormalReturn addProject(ServiceRequest request) {
         ProjectAddContract req = request.getContract();
