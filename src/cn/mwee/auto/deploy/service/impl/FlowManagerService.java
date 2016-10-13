@@ -86,6 +86,9 @@ public class FlowManagerService implements IFlowManagerService {
     @Value("${auto.bak.dir}")
     private String autoBakDir;
 
+    @Value("${auto.workSpace.dir}")
+    private String workSpace = "/opt/auto/workspace";
+
     private int flowExeDelay = 1;
 
     @Override
@@ -353,12 +356,27 @@ public class FlowManagerService implements IFlowManagerService {
         Map<String, String> flowParamMap = new HashMap<>();
         flowParamMap.put("%bakDir%", autoBakDir);
         flowParamMap.put("%flowId%", pFlow.getId() + "");
-        flowParamMap.put("%env%", deployEnv);
         flowParamMap.put("%vcsType%", pTemplate.getVcsType());
         flowParamMap.put("%vcsRep%", pTemplate.getVcsRep());
         flowParamMap.put("%vcsBranch%", pFlow.getVcsBranch());
         flowParamMap.put("%flowStep%", pFlow.getFlowStep()+"");
-
+        flowParamMap.put("%workSpace%", workSpace);
+        String env = "";
+        switch (flow.getEnv()) {
+            case Env.DEV :
+                env = "dev";
+                break;
+            case Env.TEST :
+                env = "test";
+                break;
+            case Env.UAT :
+                env = "uat";
+                break;
+            case Env.PROD :
+                env = "prod";
+                break;
+        }
+        flowParamMap.put("%env%", env);
         String repUrl = pTemplate.getVcsRep();
         if (StringUtils.isNotBlank(repUrl)
                 && StringUtils.isNotBlank(pFlow.getVcsBranch())) {
@@ -368,6 +386,9 @@ public class FlowManagerService implements IFlowManagerService {
         }
         String version = userParamsMap.get("version") == null ? "" : userParamsMap.get("version");
         flowParamMap.put("%projectBackupPath%", autoBakDir + "/" + flowParamMap.get("%projectName%") + "_" + version);
+
+        String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%projectName%");
+        flowParamMap.put("%projectDir%", projectDir.replace("//" , "/"));
         return flowParamMap;
     }
 
@@ -926,10 +947,12 @@ public class FlowManagerService implements IFlowManagerService {
 
         /*int old = 0x01a;
         System.out.println(1<<6);*/
-        String paramStr = "ea\tb\nc\rd";
+        /*String paramStr = "ea\tb\nc\rd";
         System.out.println(paramStr);
         paramStr=paramStr.replaceAll("[\\t\\n\\r]", " ");
-        System.out.println(paramStr);
+        System.out.println(paramStr);*/
 
+        String str = "/op//123/wrol";
+        System.out.println(str.replace("//" , "/"));
     }
 }
