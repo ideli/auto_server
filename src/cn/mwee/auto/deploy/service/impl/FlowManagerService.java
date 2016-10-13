@@ -142,9 +142,9 @@ public class FlowManagerService implements IFlowManagerService {
     public boolean executeFlow(int flowId) throws Exception {
         Flow flow = flowMapper.selectByPrimaryKey(flowId);
         //判断
-        if (!canExecute(flow)) {
+        /*if (!canExecute(flow)) {
             throw new Exception("执行失败");
-        }
+        }*/
         if (initFlowTasks(flowId) && startFlow(flowId)) {
             flow.setState(TaskState.ING.name());
             flow.setOperater(SecurityUtils.getSubject().getPrincipal() == null ? "system" : SecurityUtils.getSubject().getPrincipal().toString());
