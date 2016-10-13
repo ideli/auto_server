@@ -388,7 +388,7 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%projectBackupPath%", autoBakDir + "/" + flowParamMap.get("%projectName%") + "_" + version);
 
         String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%projectName%");
-        flowParamMap.put("%projectDir%", projectDir.replace("//" , "/"));
+        flowParamMap.put("%workSpace%", projectDir.replace("//" , "/"));
         return flowParamMap;
     }
 
