@@ -360,7 +360,7 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%vcsRep%", pTemplate.getVcsRep());
         flowParamMap.put("%vcsBranch%", pFlow.getVcsBranch());
         flowParamMap.put("%flowStep%", pFlow.getFlowStep()+"");
-        flowParamMap.put("%workSpace%", workSpace);
+        flowParamMap.put("%autoWorkspace%", workSpace);
         String env = "";
         switch (flow.getEnv()) {
             case Env.DEV :
@@ -388,7 +388,7 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%projectBackupPath%", autoBakDir + "/" + flowParamMap.get("%projectName%") + "_" + version);
 
         String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%projectName%");
-        flowParamMap.put("%workSpace%", projectDir.replace("//" , "/"));
+        flowParamMap.put("%workspace%", projectDir.replace("//" , "/"));
         return flowParamMap;
     }
 
