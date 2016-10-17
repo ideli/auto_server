@@ -65,4 +65,6 @@ public interface ITemplateController extends IController  {
      */
     NormalReturn getZoneTemplates(ServiceRequest request);
 
+    NormalReturn updateTemplateFlowStep(ServiceRequest request);
+
 }

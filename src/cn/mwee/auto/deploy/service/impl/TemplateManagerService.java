@@ -662,6 +662,17 @@ public class TemplateManagerService implements ITemplateManagerService {
         return autoTemplateExtMapper.getTemplate4Zone(host);
     }
 
+
+    @Override
+    public boolean updateTemplateFlowStep(Integer templateId, Byte flowStep) {
+        AutoTemplate template = new AutoTemplate();
+        template.setId(templateId);
+        template.setFlowStep(flowStep);
+        template.setUpdateTime(new Date());
+        template.setOperater(AuthUtils.getCurrUserName());
+        return autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
+    }
+
     public static void main(String[] args) {
         String url = "http://git.9now.net:10080/devops/mw_auto.git";
         System.out.println(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')));

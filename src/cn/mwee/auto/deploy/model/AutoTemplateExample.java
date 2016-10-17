@@ -501,6 +501,66 @@ public class AutoTemplateExample {
             return (Criteria) this;
         }
 
+        public Criteria andFlowStepIsNull() {
+            addCriterion("flow_step is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepIsNotNull() {
+            addCriterion("flow_step is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepEqualTo(Byte value) {
+            addCriterion("flow_step =", value, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepNotEqualTo(Byte value) {
+            addCriterion("flow_step <>", value, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepGreaterThan(Byte value) {
+            addCriterion("flow_step >", value, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepGreaterThanOrEqualTo(Byte value) {
+            addCriterion("flow_step >=", value, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepLessThan(Byte value) {
+            addCriterion("flow_step <", value, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepLessThanOrEqualTo(Byte value) {
+            addCriterion("flow_step <=", value, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepIn(List<Byte> values) {
+            addCriterion("flow_step in", values, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepNotIn(List<Byte> values) {
+            addCriterion("flow_step not in", values, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepBetween(Byte value1, Byte value2) {
+            addCriterion("flow_step between", value1, value2, "flowStep");
+            return (Criteria) this;
+        }
+
+        public Criteria andFlowStepNotBetween(Byte value1, Byte value2) {
+            addCriterion("flow_step not between", value1, value2, "flowStep");
+            return (Criteria) this;
+        }
+
         public Criteria andVcsTypeIsNull() {
             addCriterion("vcs_type is null");
             return (Criteria) this;

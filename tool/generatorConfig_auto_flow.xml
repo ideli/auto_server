@@ -74,15 +74,7 @@
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>-->
-		<table tableName="flows" domainObjectName="Flow"
-			   enableCountByExample="true"
-			   enableUpdateByExample="true"
-			   enableDeleteByExample="true"
-			   enableSelectByExample="true"
-			   selectByExampleQueryId="true">
-			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
-		</table>
-		<!--<table tableName="templates" domainObjectName="AutoTemplate"
+		<!--<table tableName="flows" domainObjectName="Flow"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
 			   enableDeleteByExample="true"
@@ -90,6 +82,14 @@
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>-->
+		<table tableName="templates" domainObjectName="AutoTemplate"
+			   enableCountByExample="true"
+			   enableUpdateByExample="true"
+			   enableDeleteByExample="true"
+			   enableSelectByExample="true"
+			   selectByExampleQueryId="true">
+			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
+		</table>
 		<!--<table tableName="template_zones" domainObjectName="TemplateZone"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"

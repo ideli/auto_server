@@ -35,6 +35,14 @@ public class AutoTemplate {
     private Integer projectId;
 
     /**
+     * 发布流程
+     * templates.flow_step
+     *
+     * @mbggenerated
+     */
+    private Byte flowStep;
+
+    /**
      * 版本控制系统类型
      * templates.vcs_type
      *
@@ -198,6 +206,30 @@ public class AutoTemplate {
      */
     public void setProjectId(Integer projectId) {
         this.projectId = projectId;
+    }
+
+    /**
+     * 发布流程
+     * This method returns the value of the database column templates.flow_step
+     *
+     * @return the value of templates.flow_step
+     *
+     * @mbggenerated
+     */
+    public Byte getFlowStep() {
+        return flowStep;
+    }
+
+    /**
+     * 发布流程
+     * This method sets the value of the database column templates.flow_step
+     *
+     * @param flowStep the value for templates.flow_step
+     *
+     * @mbggenerated
+     */
+    public void setFlowStep(Byte flowStep) {
+        this.flowStep = flowStep;
     }
 
     /**

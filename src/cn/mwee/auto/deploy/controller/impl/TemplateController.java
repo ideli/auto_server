@@ -432,4 +432,15 @@ public class TemplateController extends AutoAbstractController implements ITempl
         TemplateZoneIpQuery req = request.getContract();
         return new NormalReturn(templateManagerService.getTemplate4Host(req.getHost()));
     }
+
+    @Override
+    @Contract(ModifyTemplateFlowStepRequest.class)
+    public NormalReturn updateTemplateFlowStep(ServiceRequest request) {
+        ModifyTemplateFlowStepRequest req = request.getContract();
+        if (templateManagerService.updateTemplateFlowStep(req.getTemplateId(),req.getFlowStep())) {
+            return new NormalReturn();
+        }
+        return new NormalReturn("500","error");
+    }
+
 }

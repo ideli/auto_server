@@ -179,4 +179,12 @@ public interface ITemplateManagerService {
      * @return 主机对应模板
      */
     List<AutoTemplate> getTemplate4Host(String host);
+
+    /**
+     * 更新模板发布流程
+     * @param templateId
+     * @return
+     */
+    boolean updateTemplateFlowStep(Integer templateId,Byte flowStep);
+
 }
