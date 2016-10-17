@@ -343,7 +343,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
                 }
             });
         } else {
-            String[] zones = StringUtils.split(contract.getZones(), ",|;| ");
+            String[] zones = StringUtils.split(contract.getZones(), ",|;| |\n");
             Byte env = contract.getEnv();
             if (env == null) return new NormalReturn("500","模板区环境不能为空");
             for (String zone : zones)
