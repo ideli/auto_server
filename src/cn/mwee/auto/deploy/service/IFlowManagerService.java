@@ -22,7 +22,7 @@ public interface IFlowManagerService {
      * @param req
      * @return
      */
-	Integer createFlow(FlowAddContract req);
+	Integer createFlow(FlowAddContract req) throws Exception;
 
     /**
      * 执行任务流
@@ -147,6 +147,8 @@ public interface IFlowManagerService {
 	 * @return
 	 */
 	BaseQueryResult<Flow> getSubFlows(SubFlowQueryContract req, Flow flow);
+
+    Flow getSubFlow(Integer pid,Byte type,Byte env);
 
     /**
      * 获取流程

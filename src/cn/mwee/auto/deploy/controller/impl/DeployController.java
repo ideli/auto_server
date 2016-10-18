@@ -58,7 +58,7 @@ public class DeployController implements IDeployController {
         try {
             int flowId = flowManagerService.createFlow(req);
             if (flowId > 0) {
-                if (req.getPid() != null && req.getPid() != 0 && (req.getTemplateId() == 1 || req.getType() == 2)) {
+                if (req.getPid() != null && req.getPid() != 0 && (req.getType() == 1 || req.getType() == 2)) {
                     flowManagerService.updateFlowStepState(req.getPid(),req.getStep(),req.getStepState());
                 }
                 if (req.getExeNow() == 1) {
@@ -122,6 +122,24 @@ public class DeployController implements IDeployController {
             return new NormalReturn("500", e.getMessage(), "error");
         }
     }
+
+    @Override
+    @Contract(SubFlowZoneStateContract.class)
+    public NormalReturn subZonesState(ServiceRequest request) {
+        SubFlowZoneStateContract req = request.getContract();
+        try {
+            Map<String, Object> result = new HashMap<>();
+            Flow subFlow = flowManagerService.getSubFlow(req.getPid(),req.getType(),req.getEnv());
+            if (subFlow == null) return new NormalReturn("500", "未查询到相应流程");
+            result.put("subFlowInfo",subFlow);
+            result.put("zonesState",flowManagerService.getZonesState(subFlow.getId()));
+            return new NormalReturn(result);
+        } catch (Exception e) {
+            logger.error("", e);
+            return new NormalReturn("500",e.getMessage());
+        }
+    }
+
 
     @Override
     @Contract(ZoneStateContract.class)

@@ -92,22 +92,28 @@ public class FlowManagerService implements IFlowManagerService {
     private int flowExeDelay = 1;
 
     @Override
-    public Integer createFlow(FlowAddContract req) {
+    public Integer createFlow(FlowAddContract req) throws Exception {
         Flow flow = createFlowSimple(req);
-        if (req.getPid() != null) {
+        if (req.getPid() != null && req.getPid() > 0) {
+            if (StringUtils.isEmpty(flow.getZones())) throw new Exception("未配置对应环境区域主机");
+            AutoTemplate subTemplate = templateManagerService.getSubTemplate(req.getTemplateId(), req.getType(), false);
+            if (null == subTemplate) throw new Exception("未配置对应任务");
+            List<TemplateTask> ttList = templateManagerService.getTemplateTasks(subTemplate.getId());
+            if (CollectionUtils.isEmpty(ttList)) throw new Exception("未配置对应任务");
+            flow.setTemplateId(subTemplate.getId());
             flow.setPid(req.getPid());
             flow.setFlowStep(req.getStep());
             flow.setStepState(req.getStepState());
-            Map<String, Object> params = req.getParams() == null ? new HashMap<>() : req.getParams();
-            flow.setParams(JSON.toJSONString(params));
-            flow.setIsreview((req.getEnv() != null && req.getEnv() == 3 ) ? FlowReviewType.Unreviewed : FlowReviewType.Ignore);
+            flow.setIsreview((req.getEnv() != null && req.getEnv() == 3) ? FlowReviewType.Unreviewed : FlowReviewType.Ignore);
         }
+        Map<String, Object> params = req.getParams() == null ? new HashMap<>() : req.getParams();
+        flow.setParams(JSON.toJSONString(params));
         flow.setCreateTime(new Date());
         flow.setCreator(AuthUtils.getCurrUserName());
         flow.setOperater(flow.getCreator());
         flow.setState(TaskState.INIT.name());
         int result = flowMapper.insertSelective(flow);
-        if (result > 0 &&  req.getStrategyZoneSize() != null
+        if (result > 0 && req.getStrategyZoneSize() != null
                 && req.getStrategyInterval() != null) {
             FlowStrategy flowStrategy = new FlowStrategy();
             flowStrategy.setFlowId(flow.getId());
@@ -128,14 +134,28 @@ public class FlowManagerService implements IFlowManagerService {
         flow.setProjectId(req.getProjectId());
         flow.setType(req.getType());
         flow.setFlowStep(req.getFlowStep());
-        if (req.getPid() !=null && (req.getStep() & 1 )== 1) {
+        if (req.getPid() != null && (req.getStep() & 1) == 1) {
             flow.setZones(localHost);
         } else {
-            flow.setZones(req.getZones());
+//            flow.setZones(req.getZones());
+            flow.setZones(getZoneStr(req.getTemplateId(), req.getEnv()));
         }
         flow.setVcsBranch(req.getVcsBranch());
         flow.setNeedbuild(req.getNeedBuild());
         return flow;
+    }
+
+    private String getZoneStr(Integer templateId, Byte env) {
+        StringBuilder zoneStr = new StringBuilder();
+        List<TemplateZoneModel> zoneModelList = templateManagerService.getTemplateZones(templateId, env);
+        zoneModelList.forEach(templateZoneModel -> {
+            if (zoneStr.length() > 0) {
+                zoneStr.append(",").append(templateZoneModel.getIp());
+            } else {
+                zoneStr.append(templateZoneModel.getIp());
+            }
+        });
+        return zoneStr.toString();
     }
 
     @Override
@@ -182,7 +202,7 @@ public class FlowManagerService implements IFlowManagerService {
         if (flow == null) {
             throw new NullPointerException("Cant find flow for id:" + flowId);
         }
-        if (flow.getPid()!=null && flow.getPid() != 0) {
+        if (flow.getPid() != null && flow.getPid() != 0) {
             pFlow = flowMapper.selectByPrimaryKey(flow.getPid());
         }
 
@@ -209,7 +229,7 @@ public class FlowManagerService implements IFlowManagerService {
         String[] zones = zoneStr.split(",");
         //用户定义变量
         Map<String, String> userParamsMap = new HashMap<>();
-        String paramStr = flow.getParams();
+        String paramStr = pFlow == null ? flow.getParams() : pFlow.getParams();
         if (StringUtils.isNotBlank(paramStr)) {
             userParamsMap = JSON.parseObject(flow.getParams(), Map.class);
         }
@@ -220,7 +240,7 @@ public class FlowManagerService implements IFlowManagerService {
         Map<String, FlowTask> zoneStartTaskMap = new HashMap<>();
         for (TemplateTask tt : tts) {
             //prepareGroup
-            if ( tt.getGroup().equals(GroupType.PrepareGroup)) {
+            if (tt.getGroup().equals(GroupType.PrepareGroup)) {
                 FlowTask ft = buildFlowTask(tt, flowId, localHost, flowParamMap, userParamsMap);
                 if (ft != null) {
                     fts.add(ft);
@@ -234,20 +254,20 @@ public class FlowManagerService implements IFlowManagerService {
                 //构建模板的构建任务单独出来
                 if (flow.getType() == TemplateType.BUILD && tt.getGroup().equals(GroupType.BuildGroup) && pFlow != null) {
                     Byte flowStep = pFlow.getFlowStep();
-                    for (int l=1; l< 5 ;l++) {
-                        int step =flowStep & (1<< l) ;
+                    for (int l = 1; l < 5; l++) {
+                        int step = flowStep & (1 << l);
                         if (step == 0) continue;
                         switch (step) {
-                            case 2 :
+                            case 2:
                                 flowParamMap.put("%env%", "dev");
                                 break;
-                            case 4 :
+                            case 4:
                                 flowParamMap.put("%env%", "test");
                                 break;
-                            case 8 :
+                            case 8:
                                 flowParamMap.put("%env%", "uat");
                                 break;
-                            case 16 :
+                            case 16:
                                 flowParamMap.put("%env%", "prod");
                                 break;
                         }
@@ -310,7 +330,7 @@ public class FlowManagerService implements IFlowManagerService {
         if (StringUtils.isNotBlank(task.getParams())) {
             paramStr += task.getParams();
         }
-        paramStr=paramStr.replaceAll("[\\t\\n\\r]", " ");
+        paramStr = paramStr.replaceAll("[\\t\\n\\r]", " ");
         FlowTask ft = new FlowTask();
         ft.setGroup(tt.getGroup());
         ft.setPriority(tt.getPriority());
@@ -348,7 +368,7 @@ public class FlowManagerService implements IFlowManagerService {
     }
 
     private Map<String, String> initFlowParams(AutoTemplate template, Flow flow, Map<String, String> userParamsMap) {
-        Flow pFlow ;
+        Flow pFlow;
         AutoTemplate pTemplate;
         pFlow = (flow.getPid() != null && flow.getPid() != 0) ? getFlow(flow.getPid()) : flow;
         pTemplate = (template.getPid() != null && template.getPid() != 0) ? templateManagerService.getTemplate(template.getPid()) : template;
@@ -359,20 +379,20 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%vcsType%", pTemplate.getVcsType());
         flowParamMap.put("%vcsRep%", pTemplate.getVcsRep());
         flowParamMap.put("%vcsBranch%", pFlow.getVcsBranch());
-        flowParamMap.put("%flowStep%", pFlow.getFlowStep()+"");
+        flowParamMap.put("%flowStep%", pFlow.getFlowStep() + "");
         flowParamMap.put("%autoWorkspace%", workSpace);
         String env = "";
         switch (flow.getEnv()) {
-            case Env.DEV :
+            case Env.DEV:
                 env = "dev";
                 break;
-            case Env.TEST :
+            case Env.TEST:
                 env = "test";
                 break;
-            case Env.UAT :
+            case Env.UAT:
                 env = "uat";
                 break;
-            case Env.PROD :
+            case Env.PROD:
                 env = "prod";
                 break;
         }
@@ -388,7 +408,7 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%projectBackupPath%", autoBakDir + "/" + flowParamMap.get("%projectName%") + "_" + version);
 
         String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%projectName%");
-        flowParamMap.put("%workspace%", projectDir.replace("//" , "/"));
+        flowParamMap.put("%workspace%", projectDir.replace("//", "/"));
         return flowParamMap;
     }
 
@@ -405,16 +425,16 @@ public class FlowManagerService implements IFlowManagerService {
     }
 
     @Override
-    public boolean updateFlowStepState(int flowId,byte step,Integer stepState) {
+    public boolean updateFlowStepState(int flowId, byte step, Integer stepState) {
         int i;
-        for (i=0; i<5; i++) {
+        for (i = 0; i < 5; i++) {
             if (step >> i == 1) break;
         }
         Flow oldFlow = getFlow(flowId);
         Flow flow = new Flow();
         flow.setId(flowId);
-        flow.setStepState((oldFlow.getStepState()&(~(3<<(i*2)))) | (stepState << (i*2)));
-        return flowMapper.updateByPrimaryKeySelective(flow)>0;
+        flow.setStepState((oldFlow.getStepState() & (~(3 << (i * 2)))) | (stepState << (i * 2)));
+        return flowMapper.updateByPrimaryKeySelective(flow) > 0;
     }
 
 
@@ -440,8 +460,8 @@ public class FlowManagerService implements IFlowManagerService {
             flowMapper.updateByPrimaryKeySelective(flowTmp);
             if (TaskState.SUCCESS.name().equals(stateNew) ||
                     TaskState.ERROR.name().equals(stateNew)) {
-                if (flow.getPid()!= null && flow.getPid() != 0 && (flow.getType() == 1 || flow.getType() == 2)) {
-                    updateFlowStepState(flow.getPid(),flow.getFlowStep(),flowTmp.getStepState());
+                if (flow.getPid() != null && flow.getPid() != 0 && (flow.getType() == 1 || flow.getType() == 2)) {
+                    updateFlowStepState(flow.getPid(), flow.getFlowStep(), flowTmp.getStepState());
                 }
                 sendNoticeMail(flow, stateNew);
                 if (flow.getNeedbuild() == 0) {
@@ -818,6 +838,17 @@ public class FlowManagerService implements IFlowManagerService {
     }
 
     @Override
+    public Flow getSubFlow(Integer pid, Byte type, Byte env) {
+        FlowExample example = new FlowExample();
+        example.createCriteria().andPidEqualTo(pid)
+                .andTypeEqualTo(type)
+                .andEnvEqualTo(env);
+        example.setOrderByClause("id DESC");
+        List<Flow> subFlows = flowMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(subFlows) ? null : subFlows.get(0);
+    }
+
+    @Override
     public Flow getFlow(Integer flowId) {
         return flowMapper.selectByPrimaryKey(flowId);
     }
@@ -953,6 +984,6 @@ public class FlowManagerService implements IFlowManagerService {
         System.out.println(paramStr);*/
 
         String str = "/op//123/wrol";
-        System.out.println(str.replace("//" , "/"));
+        System.out.println(str.replace("//", "/"));
     }
 }

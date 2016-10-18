@@ -35,6 +35,14 @@ public interface IDeployController extends IController {
 	 * @return
 	 */
 	NormalReturn zonesState(ServiceRequest request);
+
+    /**
+     * 子流程区域状态
+     * @param request
+     * @return
+     */
+    NormalReturn subZonesState(ServiceRequest request);
+
 	/**
 	 * 区域任务信息列表
 	 * @param request

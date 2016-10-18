@@ -102,6 +102,13 @@ public interface ITemplateManagerService {
     List<String> getTemplateTaskParamKeys(Integer templateId);
 
     /**
+     * 获取所有模板任务中的参数可以列表
+     * @param templateId
+     * @return
+     */
+    List<String> getAllTemplateTaskParamKeys(Integer templateId);
+
+    /**
      * git分支信息
      * @param template
      * @return

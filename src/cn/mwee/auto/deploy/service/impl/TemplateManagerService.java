@@ -413,6 +413,38 @@ public class TemplateManagerService implements ITemplateManagerService {
         return paramKeys;
     }
 
+    @Override
+    public List<String> getAllTemplateTaskParamKeys(Integer templateId) {
+        List<AutoTemplate> subTemplateList = getSubTemplateList(templateId);
+        List<Integer> templateIdList = new ArrayList<>();
+        subTemplateList.forEach(subTemplate -> templateIdList.add(subTemplate.getId()));
+
+        TemplateTaskExample example = new TemplateTaskExample();
+        TemplateTaskExample.Criteria c = example.createCriteria();
+        c.andTemplateIdIn(templateIdList);
+        c.andInuseEqualTo(InUseType.IN_USE);
+        List<TemplateTask> ttList = templateTaskMapper.selectByExample(example);
+        List<AutoTask> tasks = getTasks4TemplateTaskList(ttList);
+
+        Set<String> paramKeySet = new HashSet<>();
+        for (AutoTask task : tasks) {
+            String paramStr = task.getParams();
+            if (StringUtils.isEmpty(paramStr)) continue;
+            parseParamKeys(paramStr, paramKeySet);
+            /*
+            String[] params = paramStr.split(" ");
+            for (String param : params) {
+                if (StringUtils.isEmpty(param)) continue;
+                if (param.startsWith("#") && param.endsWith("#")) {
+                    paramKeySet.add(param.replace("#",""));
+                }
+            }*/
+        }
+        List<String> paramKeys = new ArrayList<>();
+        paramKeys.addAll(paramKeySet);
+        return paramKeys;
+    }
+
     /**
      * 参数名解析
      *

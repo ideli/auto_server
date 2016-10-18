@@ -200,6 +200,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
                 //任务参数key
                 result.put("taskParamKeys", templateManagerService.getTemplateTaskParamKeys(req.getTemplateId()));
             }
+            result.put("allTaskParamKeys", templateManagerService.getAllTemplateTaskParamKeys(req.getTemplateId()));
             //任务信息
 //            result.put("tasks", templateManagerService.getTemplateSimpleTasks(req.getTemplateId()));
             result.put("vcsInfo", templateManagerService.getGitRepInfo(template));
