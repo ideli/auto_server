@@ -60,9 +60,6 @@ public class FlowManagerService implements IFlowManagerService {
     private AutoTaskMapper autoTaskMapper;
 
     @Autowired
-    private FlowStrategyMapper flowStrategyMapper;
-
-    @Autowired
     private IProjectService projectService;
 
     @Resource
@@ -104,7 +101,9 @@ public class FlowManagerService implements IFlowManagerService {
             flow.setPid(req.getPid());
             flow.setFlowStep(req.getStep());
             flow.setStepState(req.getStepState());
-            flow.setIsreview((req.getEnv() != null && req.getEnv() == 3) ? FlowReviewType.Unreviewed : FlowReviewType.Ignore);
+            flow.setIsreview(FlowReviewType.Ignore);
+        } else {
+            flow.setIsreview(needReview(flow.getFlowStep()) ? FlowReviewType.Unreviewed : FlowReviewType.Ignore);
         }
         Map<String, Object> params = req.getParams() == null ? new HashMap<>() : req.getParams();
         flow.setParams(JSON.toJSONString(params));
@@ -113,18 +112,12 @@ public class FlowManagerService implements IFlowManagerService {
         flow.setOperater(flow.getCreator());
         flow.setState(TaskState.INIT.name());
         int result = flowMapper.insertSelective(flow);
-        if (result > 0 && req.getStrategyZoneSize() != null
-                && req.getStrategyInterval() != null) {
-            FlowStrategy flowStrategy = new FlowStrategy();
-            flowStrategy.setFlowId(flow.getId());
-            flowStrategy.setCreatetime(new Date());
-            flowStrategy.setInterval(req.getStrategyInterval());
-            flowStrategy.setZonesize(req.getStrategyZoneSize());
-            flowStrategyMapper.insertSelective(flowStrategy);
-        }
         return result > 0 ? flow.getId() : 0;
     }
 
+    private boolean needReview(Byte flowStep) {
+        return flowStep != null && ((flowStep & (1 << 4)) > 0 || (flowStep & (1 << 5)) > 0);
+    }
 
     private Flow createFlowSimple(FlowAddContract req) {
         Flow flow = new Flow();
@@ -134,11 +127,12 @@ public class FlowManagerService implements IFlowManagerService {
         flow.setProjectId(req.getProjectId());
         flow.setType(req.getType());
         flow.setFlowStep(req.getFlowStep());
-        if (req.getPid() != null && (req.getStep() & 1) == 1) {
-            flow.setZones(localHost);
-        } else {
-//            flow.setZones(req.getZones());
-            flow.setZones(getZoneStr(req.getTemplateId(), req.getEnv()));
+        if (req.getPid() != null && req.getPid() != 0) {
+            if ((req.getStep() & 1) == 1) {
+                flow.setZones(localHost);
+            } else {
+                flow.setZones(getZoneStr(req.getTemplateId(), req.getEnv()));
+            }
         }
         flow.setVcsBranch(req.getVcsBranch());
         flow.setNeedbuild(req.getNeedBuild());
@@ -166,10 +160,16 @@ public class FlowManagerService implements IFlowManagerService {
             throw new Exception("执行失败");
         }*/
         if (initFlowTasks(flowId) && startFlow(flowId)) {
-            flow.setState(TaskState.ING.name());
-            flow.setOperater(SecurityUtils.getSubject().getPrincipal() == null ? "system" : SecurityUtils.getSubject().getPrincipal().toString());
-            flow.setUpdateTime(new Date());
-            flowMapper.updateByPrimaryKeySelective(flow);
+            Flow tmpFlow = new Flow();
+            tmpFlow.setState(TaskState.ING.name());
+            tmpFlow.setOperater(AuthUtils.getCurrUserName());
+            tmpFlow.setUpdateTime(new Date());
+
+            FlowExample example = new FlowExample();
+            example.createCriteria()
+                    .andIdEqualTo(flowId)
+                    .andStateEqualTo(TaskState.INIT.name());
+            flowMapper.updateByExampleSelective(tmpFlow,example);
 //            sendNoticeMail(flow,TaskState.ING.name());
             return true;
         } else {
@@ -206,7 +206,7 @@ public class FlowManagerService implements IFlowManagerService {
             pFlow = flowMapper.selectByPrimaryKey(flow.getPid());
         }
 
-        FlowStrategy flowStrategy = getFlowStrategy4Flow(flowId);
+        FlowStrategy flowStrategy = (pFlow != null ? templateManagerService.getFlowStrategy(pFlow.getTemplateId()) : null);
         //get template
         AutoTemplate template = templateManagerService.getTemplate(flow.getTemplateId());
         if (template == null) {
@@ -647,13 +647,6 @@ public class FlowManagerService implements IFlowManagerService {
         return list;
     }
 
-    public FlowStrategy getFlowStrategy4Flow(Integer flowId) {
-        FlowStrategyExample example = new FlowStrategyExample();
-        example.createCriteria().andFlowIdEqualTo(flowId);
-        List<FlowStrategy> list = flowStrategyMapper.selectByExample(example);
-        return CollectionUtils.isEmpty(list) ? null : list.get(0);
-    }
-
     private boolean startFlow(int flowId) {
         try {
             List<FlowTask> flowTasks = getStartFlowTask(flowId);
@@ -854,18 +847,18 @@ public class FlowManagerService implements IFlowManagerService {
     }
 
     @Override
-    public FlowStrategy getFlowStrategy(Integer flowId) {
-        FlowStrategyExample example = new FlowStrategyExample();
-        example.createCriteria().andFlowIdEqualTo(flowId);
-        List<FlowStrategy> list = flowStrategyMapper.selectByExample(example);
-        return CollectionUtils.isEmpty(list) ? null : list.get(0);
-    }
-
-    @Override
     public List<Flow> getSubFlowList(Integer flowId) {
         FlowExample example = new FlowExample();
         example.createCriteria().andPidEqualTo(flowId);
         return flowMapper.selectByExample(example);
+    }
+
+    @Override
+    public boolean updateFlowReview(Integer flowId, Byte isReview) {
+        Flow flow = new Flow();
+        flow.setId(flowId);
+        flow.setIsreview(isReview);
+        return flowMapper.updateByPrimaryKeySelective(flow) > 0;
     }
 
     @Override
@@ -948,6 +941,33 @@ public class FlowManagerService implements IFlowManagerService {
         example.setLimitEnd(1);
         List<FlowTask> flowTasks = flowTaskMapper.selectByExample(example);
         return CollectionUtils.isEmpty(flowTasks) ? null : flowTasks.get(0);
+    }
+
+    @Override
+    public List<Flow> getAllLastSubFlow(Integer pid) {
+        List<Flow> lastSubFlows = new ArrayList<>();
+        Flow pFlow = getFlow(pid);
+        byte flowStep = pFlow.getFlowStep();
+        int stepState = pFlow.getStepState();
+        for (int i = 0; i < 6; i++) {
+            int tmpStep = 1 << i;
+            if ((flowStep & tmpStep) > 0
+                    && (stepState & (3 << (i*2))) > 0) {
+                Flow subFlow = getLastSubFlow(pid,(byte)tmpStep);
+                if (subFlow != null) lastSubFlows.add(subFlow);
+            }
+        }
+        return lastSubFlows;
+    }
+    @Override
+    public Flow getLastSubFlow(Integer pid, Byte flowStep) {
+        FlowExample example = new FlowExample();
+        example.createCriteria()
+                .andPidEqualTo(pid)
+                .andFlowStepEqualTo(flowStep);
+        example.setOrderByClause("id DESC");
+        List<Flow> subFlows = flowMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(subFlows) ? null : subFlows.get(0);
     }
 
     public static void main(String[] args) {

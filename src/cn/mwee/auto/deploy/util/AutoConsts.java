@@ -103,7 +103,8 @@ public class AutoConsts {
         public static final byte DEV            = 0;    //开发
         public static final byte TEST           = 1;    //测试
         public static final byte UAT            = 2;    //uat
-        public static final byte PROD           = 3;    //生产
+		public static final byte FORTRESS       = 3;    //堡垒
+        public static final byte PROD           = 4;    //生产
     }
 
 	public enum TaskState

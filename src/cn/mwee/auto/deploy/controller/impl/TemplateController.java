@@ -269,6 +269,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
             Map<String,List<TemplateTask>> templateTaskMap = templateManagerService.getAllTemplateTasks(templateId);
             result.put("allTemplateTasks", templateTaskMap);
 
+            result.put("strategyInfo", templateManagerService.getFlowStrategy(templateId));
 
             //监控配置
             result.put("monitorInfo", templateManagerService.getTemplateZoneMonitor(templateId));
@@ -439,6 +440,16 @@ public class TemplateController extends AutoAbstractController implements ITempl
     public NormalReturn updateTemplateFlowStep(ServiceRequest request) {
         ModifyTemplateFlowStepRequest req = request.getContract();
         if (templateManagerService.updateTemplateFlowStep(req.getTemplateId(),req.getFlowStep())) {
+            return new NormalReturn();
+        }
+        return new NormalReturn("500","error");
+    }
+
+    @Override
+    @Contract(TemplateStrategyAddContract.class)
+    public NormalReturn addTemplateStrategy(ServiceRequest request) {
+        TemplateStrategyAddContract req = request.getContract();
+        if (templateManagerService.updateTemplateFlowStrategy(req.getTemplateId(),req.getStrategyZoneSize(),req.getStrategyInterval())) {
             return new NormalReturn();
         }
         return new NormalReturn("500","error");

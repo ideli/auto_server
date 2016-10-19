@@ -10,11 +10,9 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 import cn.mwee.auto.deploy.contract.commom.BaseContract;
-import cn.mwee.auto.deploy.model.FlowStrategy;
 import org.hibernate.validator.constraints.NotBlank;
 
 import lombok.Data;
-import org.hibernate.validator.constraints.Range;
 
 /**
  * @author mengfanyuan

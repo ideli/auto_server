@@ -194,4 +194,18 @@ public interface ITemplateManagerService {
      */
     boolean updateTemplateFlowStep(Integer templateId,Byte flowStep);
 
+    /**
+     * 获取流程执行策略
+     * @param templateId 模板Id
+     * @return
+     */
+    FlowStrategy getFlowStrategy(Integer templateId);
+
+    /**
+     * 部署策略
+     * @param templateId
+     * @return
+     */
+    boolean updateTemplateFlowStrategy(Integer templateId,Integer strategyZoneSize , Integer strategyInterval);
+
 }

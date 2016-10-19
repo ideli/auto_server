@@ -15,16 +15,11 @@ import javax.validation.constraints.NotNull;
  * 2016年7月6日下午5:27:18
  */
 @Data
-public class SubFlowZoneStateContract {
+public class LastSubFlowZoneStateContract {
 
 	@NotNull(message="未指定pid")
 	private Integer pid;
 	/** **/
-	@NotNull(message="未指定流程类型")
-	private Byte type;
-
-	@NotNull(message="未指定环境")
-	private Byte env;
-
-
+	@NotNull(message="未指定step")
+	private Byte step;
 }

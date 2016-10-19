@@ -311,63 +311,63 @@ public class FlowStrategyExample {
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdIsNull() {
-            addCriterion("flow_id is null");
+        public Criteria andTemplateIdIsNull() {
+            addCriterion("template_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdIsNotNull() {
-            addCriterion("flow_id is not null");
+        public Criteria andTemplateIdIsNotNull() {
+            addCriterion("template_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdEqualTo(Integer value) {
-            addCriterion("flow_id =", value, "flowId");
+        public Criteria andTemplateIdEqualTo(Integer value) {
+            addCriterion("template_id =", value, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdNotEqualTo(Integer value) {
-            addCriterion("flow_id <>", value, "flowId");
+        public Criteria andTemplateIdNotEqualTo(Integer value) {
+            addCriterion("template_id <>", value, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdGreaterThan(Integer value) {
-            addCriterion("flow_id >", value, "flowId");
+        public Criteria andTemplateIdGreaterThan(Integer value) {
+            addCriterion("template_id >", value, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("flow_id >=", value, "flowId");
+        public Criteria andTemplateIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("template_id >=", value, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdLessThan(Integer value) {
-            addCriterion("flow_id <", value, "flowId");
+        public Criteria andTemplateIdLessThan(Integer value) {
+            addCriterion("template_id <", value, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdLessThanOrEqualTo(Integer value) {
-            addCriterion("flow_id <=", value, "flowId");
+        public Criteria andTemplateIdLessThanOrEqualTo(Integer value) {
+            addCriterion("template_id <=", value, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdIn(List<Integer> values) {
-            addCriterion("flow_id in", values, "flowId");
+        public Criteria andTemplateIdIn(List<Integer> values) {
+            addCriterion("template_id in", values, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdNotIn(List<Integer> values) {
-            addCriterion("flow_id not in", values, "flowId");
+        public Criteria andTemplateIdNotIn(List<Integer> values) {
+            addCriterion("template_id not in", values, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdBetween(Integer value1, Integer value2) {
-            addCriterion("flow_id between", value1, value2, "flowId");
+        public Criteria andTemplateIdBetween(Integer value1, Integer value2) {
+            addCriterion("template_id between", value1, value2, "templateId");
             return (Criteria) this;
         }
 
-        public Criteria andFlowIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("flow_id not between", value1, value2, "flowId");
+        public Criteria andTemplateIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("template_id not between", value1, value2, "templateId");
             return (Criteria) this;
         }
 

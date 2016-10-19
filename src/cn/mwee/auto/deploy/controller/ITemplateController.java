@@ -67,4 +67,6 @@ public interface ITemplateController extends IController  {
 
     NormalReturn updateTemplateFlowStep(ServiceRequest request);
 
+    NormalReturn addTemplateStrategy(ServiceRequest request);
+
 }

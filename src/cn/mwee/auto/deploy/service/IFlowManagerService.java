@@ -5,7 +5,6 @@ import cn.mwee.auto.deploy.contract.flow.FlowAddContract;
 import cn.mwee.auto.deploy.contract.flow.FlowQueryContract;
 import cn.mwee.auto.deploy.contract.flow.SubFlowQueryContract;
 import cn.mwee.auto.deploy.model.Flow;
-import cn.mwee.auto.deploy.model.FlowStrategy;
 import cn.mwee.auto.deploy.model.FlowTask;
 import cn.mwee.auto.deploy.model.FlowTaskExtModel;
 
@@ -161,15 +160,15 @@ public interface IFlowManagerService {
 	 * 获取流程执行策略
 	 * @param flowId 流程Id
 	 * @return
-     */
-	FlowStrategy getFlowStrategy(Integer flowId);
-
-	/**
-	 * 获取流程执行策略
-	 * @param flowId 流程Id
-	 * @return
 	 */
 	List<Flow> getSubFlowList(Integer flowId);
+
+    /**
+     * 修改流程审核状态
+     * @param flowId
+     * @return
+     */
+    boolean updateFlowReview(Integer flowId, Byte isReview);
 
     /**
      * 审核流程
@@ -214,5 +213,21 @@ public interface IFlowManagerService {
 	 * @return
      */
 	FlowTask getOneFlowTask(Integer flowId);
+
+
+    /**
+     * 获取发布流程最新子流程
+     * @param pid
+     * @return
+     */
+    List<Flow> getAllLastSubFlow(Integer pid);
+
+    /**
+     * 获取发布流程最新子流程
+     * @param pid
+     * @return
+     */
+    Flow getLastSubFlow(Integer pid, Byte flowStep);
+
 
 }

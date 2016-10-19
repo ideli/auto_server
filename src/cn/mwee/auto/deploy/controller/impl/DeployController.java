@@ -56,6 +56,7 @@ public class DeployController implements IDeployController {
     public NormalReturn addFlow(ServiceRequest request) {
         FlowAddContract req = request.getContract();
         try {
+            if (!isReview(req)) return new NormalReturn("500", "流程未审核或未通过审核");
             int flowId = flowManagerService.createFlow(req);
             if (flowId > 0) {
                 if (req.getPid() != null && req.getPid() != 0 && (req.getType() == 1 || req.getType() == 2)) {
@@ -72,6 +73,16 @@ public class DeployController implements IDeployController {
             logger.error("addFlow error:", e);
             return new NormalReturn("500", e.getMessage(), "error");
         }
+    }
+
+    private boolean isReview(FlowAddContract req){
+        if (req.getPid() != null && req.getPid()!=0 && req.getType() == 2
+                && (AutoConsts.Env.FORTRESS == req.getEnv() || AutoConsts.Env.PROD == req.getEnv())) {
+            Flow pFlow = flowManagerService.getFlow(req.getPid());
+            return (AutoConsts.FlowReviewType.Ignore.equals(pFlow.getIsreview())
+                    || AutoConsts.FlowReviewType.Approved.equals(pFlow.getIsreview()));
+        }
+        return true;
     }
 
     @Override
@@ -140,6 +151,23 @@ public class DeployController implements IDeployController {
         }
     }
 
+    @Override
+    @Contract(LastSubFlowZoneStateContract.class)
+    public NormalReturn lastSubFlowZonesState(ServiceRequest request) {
+        LastSubFlowZoneStateContract req = request.getContract();
+        try {
+            Map<String, Object> result = new HashMap<>();
+            Flow subFlow = flowManagerService.getLastSubFlow(req.getPid(),req.getStep());
+            if (subFlow == null) return new NormalReturn("500", "未查询到相应流程");
+            result.put("subFlowInfo",subFlow);
+            result.put("zonesState",flowManagerService.getZonesState(subFlow.getId()));
+            return new NormalReturn(result);
+        } catch (Exception e) {
+            logger.error("", e);
+            return new NormalReturn("500",e.getMessage());
+        }
+    }
+
 
     @Override
     @Contract(ZoneStateContract.class)
@@ -159,6 +187,7 @@ public class DeployController implements IDeployController {
         ZoneStateContract req = request.getContract();
         try {
             Map<String, Object> result = new HashMap<>();
+            result.put("baseInfo",flowManagerService.getFlow(req.getFlowId()));
             result.put("zoneFlowTaskInfos",flowManagerService.getZoneFlowTaskInfoSimple(req.getFlowId(), req.getZone()));
             result.put("zoneState",flowManagerService.getZoneState(req.getFlowId(), req.getZone()));
             return new NormalReturn("200", "success", result);
@@ -277,7 +306,7 @@ public class DeployController implements IDeployController {
             if (flow != null) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("flowInfo", flow);
-                result.put("strategyInfo", flowManagerService.getFlowStrategy(req.getFlowId()));
+                result.put("strategyInfo", templateManagerService.getFlowStrategy(flow.getTemplateId()));
                 return new NormalReturn("200", "success", result);
             } else {
                 return new NormalReturn("500", "flow not exists for id[" + req.getFlowId() + "]");
@@ -305,7 +334,7 @@ public class DeployController implements IDeployController {
                     result.put("subTemplate", buildTemplate);
                     result.put("taskParamKeys", templateManagerService.getTemplateTaskParamKeys(buildTemplate.getId()));
                 }*/
-                result.put("subFlowList", flowManagerService.getSubFlowList(req.getFlowId()));
+                result.put("lastSubFlows", flowManagerService.getAllLastSubFlow(req.getFlowId()));
                 return new NormalReturn("200", "success", result);
             } else {
                 return new NormalReturn("500", "flow not exists for id[" + req.getFlowId() + "]");
@@ -350,5 +379,14 @@ public class DeployController implements IDeployController {
     @Contract(BaseContract.class)
     public NormalReturn jschConnections(ServiceRequest request) {
         return new NormalReturn(JschChannelCache.getAllData());
+    }
+
+    public static void main(String[] args) {
+        Byte flowStep = 32 ;
+        if ((flowStep & (1<< 4)) > 0 || (flowStep & (1<< 5)) > 0) {
+            System.out.println(flowStep & (1<< 4));
+        } else {
+            System.out.println(flowStep & (1<< 5));
+        }
     }
 }

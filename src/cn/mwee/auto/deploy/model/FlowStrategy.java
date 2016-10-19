@@ -13,11 +13,11 @@ public class FlowStrategy {
 
     /**
      * 流程Id
-     * flow_strategy.flow_id
+     * flow_strategy.template_id
      *
      * @mbggenerated
      */
-    private Integer flowId;
+    private Integer templateId;
 
     /**
      * 区域数量
@@ -68,26 +68,26 @@ public class FlowStrategy {
 
     /**
      * 流程Id
-     * This method returns the value of the database column flow_strategy.flow_id
+     * This method returns the value of the database column flow_strategy.template_id
      *
-     * @return the value of flow_strategy.flow_id
+     * @return the value of flow_strategy.template_id
      *
      * @mbggenerated
      */
-    public Integer getFlowId() {
-        return flowId;
+    public Integer getTemplateId() {
+        return templateId;
     }
 
     /**
      * 流程Id
-     * This method sets the value of the database column flow_strategy.flow_id
+     * This method sets the value of the database column flow_strategy.template_id
      *
-     * @param flowId the value for flow_strategy.flow_id
+     * @param templateId the value for flow_strategy.template_id
      *
      * @mbggenerated
      */
-    public void setFlowId(Integer flowId) {
-        this.flowId = flowId;
+    public void setTemplateId(Integer templateId) {
+        this.templateId = templateId;
     }
 
     /**

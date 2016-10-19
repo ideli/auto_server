@@ -65,6 +65,9 @@ public class TemplateManagerService implements ITemplateManagerService {
     private ZoneMapper zoneMapper;
 
     @Autowired
+    private FlowStrategyMapper flowStrategyMapper;
+
+    @Autowired
     private TemplateZoneExtMapper templateZoneExtMapper;
 
     @Autowired
@@ -703,6 +706,31 @@ public class TemplateManagerService implements ITemplateManagerService {
         template.setUpdateTime(new Date());
         template.setOperater(AuthUtils.getCurrUserName());
         return autoTemplateMapper.updateByPrimaryKeySelective(template) > 0;
+    }
+
+    @Override
+    public FlowStrategy getFlowStrategy(Integer templateId) {
+        FlowStrategyExample example = new FlowStrategyExample();
+        example.createCriteria().andTemplateIdEqualTo(templateId);
+        List<FlowStrategy> list = flowStrategyMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(list) ? null : list.get(0);
+    }
+
+    @Override
+    public boolean updateTemplateFlowStrategy(Integer templateId, Integer strategyZoneSize, Integer strategyInterval) {
+        FlowStrategy flowStrategy = getFlowStrategy(templateId);
+        if (flowStrategy == null) {
+            flowStrategy = new FlowStrategy();
+            flowStrategy.setTemplateId(templateId);
+            flowStrategy.setCreatetime(new Date());
+            flowStrategy.setInterval(strategyInterval);
+            flowStrategy.setZonesize(strategyZoneSize);
+            return flowStrategyMapper.insertSelective(flowStrategy) > 0;
+        } else {
+            flowStrategy.setInterval(strategyInterval);
+            flowStrategy.setZonesize(strategyZoneSize);
+            return flowStrategyMapper.updateByPrimaryKeySelective(flowStrategy) > 0;
+        }
     }
 
     public static void main(String[] args) {

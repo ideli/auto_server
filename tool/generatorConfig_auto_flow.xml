@@ -82,14 +82,14 @@
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>-->
-		<table tableName="templates" domainObjectName="AutoTemplate"
+		<!--<table tableName="templates" domainObjectName="AutoTemplate"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
 			   enableDeleteByExample="true"
 			   enableSelectByExample="true"
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
-		</table>
+		</table>-->
 		<!--<table tableName="template_zones" domainObjectName="TemplateZone"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
@@ -156,13 +156,13 @@
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
 		</table>
  -->
-		<!--<table tableName="flow_strategy" domainObjectName="FlowStrategy"
+		<table tableName="flow_strategy" domainObjectName="FlowStrategy"
 			   enableCountByExample="true"
 			   enableUpdateByExample="true"
 			   enableDeleteByExample="true"
 			   enableSelectByExample="true"
 			   selectByExampleQueryId="true">
 			<generatedKey column="ID" sqlStatement="MYSQL" identity="true" />
-		</table>-->
+		</table>
 	</context>
 </generatorConfiguration>
