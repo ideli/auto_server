@@ -131,7 +131,7 @@ public class FlowManagerService implements IFlowManagerService {
             if ((req.getStep() & 1) == 1) {
                 flow.setZones(localHost);
             } else {
-                flow.setZones(getZoneStr(req.getTemplateId(), req.getEnv()));
+                flow.setZones(getZoneStr(req.getTemplateId(), req.getEnv(),flow.getFlowStep()));
             }
         }
         flow.setVcsBranch(req.getVcsBranch());
@@ -139,9 +139,14 @@ public class FlowManagerService implements IFlowManagerService {
         return flow;
     }
 
-    private String getZoneStr(Integer templateId, Byte env) {
+    private String getZoneStr(Integer templateId, Byte env, Byte flowStep) {
         StringBuilder zoneStr = new StringBuilder();
         List<TemplateZoneModel> zoneModelList = templateManagerService.getTemplateZones(templateId, env);
+
+        if (Env.PROD == env && ((flowStep & (1<<4)) >0)) {
+            zoneModelList.addAll(templateManagerService.getTemplateZones(templateId, Env.FORTRESS));
+        }
+
         zoneModelList.forEach(templateZoneModel -> {
             if (zoneStr.length() > 0) {
                 zoneStr.append(",").append(templateZoneModel.getIp());
@@ -254,9 +259,25 @@ public class FlowManagerService implements IFlowManagerService {
                 //构建模板的构建任务单独出来
                 if (flow.getType() == TemplateType.BUILD && tt.getGroup().equals(GroupType.BuildGroup) && pFlow != null) {
                     Byte flowStep = pFlow.getFlowStep();
-                    for (int l = 1; l < 5; l++) {
+                    for (int l = 1; l < 6; l++) {
                         int step = flowStep & (1 << l);
                         if (step == 0) continue;
+
+                        if (step == 2) {
+                            flowParamMap.put("%env%", "dev");
+                        } else if (step == 4)  {
+                            flowParamMap.put("%env%", "test");
+                        } else if (step == 8)  {
+                            flowParamMap.put("%env%", "uat");
+                        } else if (step == 16)  {
+                            flowParamMap.put("%env%", "prod");
+                        } else if (step == 32)  {
+                            if ("prod".equals(flowParamMap.get("%env%"))) {
+                                break;
+                            }
+                            flowParamMap.put("%env%", "prod");
+                        }
+                        /*
                         switch (step) {
                             case 2:
                                 flowParamMap.put("%env%", "dev");
@@ -271,6 +292,7 @@ public class FlowManagerService implements IFlowManagerService {
                                 flowParamMap.put("%env%", "prod");
                                 break;
                         }
+                        */
                         short priority = (short) (tt.getPriority() + 1);
                         tt.setPriority(priority);
                         FlowTask flowTask = buildFlowTask(tt, flowId, zones[i], flowParamMap, userParamsMap);
@@ -1002,8 +1024,12 @@ public class FlowManagerService implements IFlowManagerService {
         System.out.println(paramStr);
         paramStr=paramStr.replaceAll("[\\t\\n\\r]", " ");
         System.out.println(paramStr);*/
+/*
 
         String str = "/op//123/wrol";
         System.out.println(str.replace("//", "/"));
+*/
+
+        System.out.println(1<<4);
     }
 }
