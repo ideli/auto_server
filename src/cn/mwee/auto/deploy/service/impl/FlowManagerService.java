@@ -131,7 +131,7 @@ public class FlowManagerService implements IFlowManagerService {
             if ((req.getStep() & 1) == 1) {
                 flow.setZones(localHost);
             } else {
-                flow.setZones(getZoneStr(req.getTemplateId(), req.getEnv(),flow.getFlowStep()));
+                flow.setZones(getZoneStr(req.getTemplateId(), req.getEnv(),req.getStep()));
             }
         }
         flow.setVcsBranch(req.getVcsBranch());
@@ -142,9 +142,11 @@ public class FlowManagerService implements IFlowManagerService {
     private String getZoneStr(Integer templateId, Byte env, Byte flowStep) {
         StringBuilder zoneStr = new StringBuilder();
         List<TemplateZoneModel> zoneModelList = templateManagerService.getTemplateZones(templateId, env);
-        if (Env.PROD == env && ((flowStep & (1<<4)) >0)) {
+        /*
+        if (Env.PROD == env) {
             zoneModelList.addAll(templateManagerService.getTemplateZones(templateId, Env.FORTRESS));
-        }
+        }*/
+
         /**
          * 去重
          */
