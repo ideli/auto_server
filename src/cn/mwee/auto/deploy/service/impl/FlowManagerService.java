@@ -142,16 +142,19 @@ public class FlowManagerService implements IFlowManagerService {
     private String getZoneStr(Integer templateId, Byte env, Byte flowStep) {
         StringBuilder zoneStr = new StringBuilder();
         List<TemplateZoneModel> zoneModelList = templateManagerService.getTemplateZones(templateId, env);
-
         if (Env.PROD == env && ((flowStep & (1<<4)) >0)) {
             zoneModelList.addAll(templateManagerService.getTemplateZones(templateId, Env.FORTRESS));
         }
-
-        zoneModelList.forEach(templateZoneModel -> {
+        /**
+         * 去重
+         */
+        Set<String> zoneIpSet = new HashSet<>();
+        zoneModelList.forEach(zoneModel -> zoneIpSet.add(zoneModel.getIp()));
+        zoneIpSet.forEach(zoneIp -> {
             if (zoneStr.length() > 0) {
-                zoneStr.append(",").append(templateZoneModel.getIp());
+                zoneStr.append(",").append(zoneIp);
             } else {
-                zoneStr.append(templateZoneModel.getIp());
+                zoneStr.append(zoneIp);
             }
         });
         return zoneStr.toString();
