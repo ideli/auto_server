@@ -449,10 +449,13 @@ public class TemplateController extends AutoAbstractController implements ITempl
     @Contract(TemplateStrategyAddContract.class)
     public NormalReturn addTemplateStrategy(ServiceRequest request) {
         TemplateStrategyAddContract req = request.getContract();
-        if (templateManagerService.updateTemplateFlowStrategy(req.getTemplateId(),req.getStrategyZoneSize(),req.getStrategyInterval())) {
-            return new NormalReturn();
+        try {
+            templateManagerService.updateTemplateFlowStrategy(req.getTemplateId(),req.getStrategyZoneSize(),req.getStrategyInterval());
+        } catch (Exception e) {
+            logger.error("", e);
+            return new NormalReturn("500",e.getMessage());
         }
-        return new NormalReturn("500","error");
+        return new NormalReturn();
     }
 
 }
