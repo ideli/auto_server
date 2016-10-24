@@ -266,10 +266,10 @@ public class FlowManagerService implements IFlowManagerService {
                 if (flow.getType() == TemplateType.BUILD && tt.getGroup().equals(GroupType.BuildGroup) && pFlow != null) {
                     Byte flowStep = pFlow.getFlowStep();
                     byte group = tt.getGroup();
+                    String workspace = flowParamMap.get("%workspace%");
                     for (int l = 1; l < 6; l++) {
                         int step = flowStep & (1 << l);
                         if (step == 0) continue;
-
                         if (step == 2) {
                             flowParamMap.put("%env%", "dev");
                         } else if (step == 4)  {
@@ -284,6 +284,7 @@ public class FlowManagerService implements IFlowManagerService {
                             }
                             flowParamMap.put("%env%", "prod");
                         }
+                        flowParamMap.put("%workspace%",workspace+flowParamMap.get("%env%"));
                         /*
                         switch (step) {
                             case 2:
@@ -441,7 +442,8 @@ public class FlowManagerService implements IFlowManagerService {
         String version = userParamsMap.get("version") == null ? "" : userParamsMap.get("version");
         flowParamMap.put("%projectBackupPath%", autoBakDir + "/" + flowParamMap.get("%projectName%") + "_" + version);
 
-        String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%env%") + "/" +flowParamMap.get("%projectName%");
+//        String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%env%") + "/" +flowParamMap.get("%projectName%");
+        String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%env%") + "/";
         flowParamMap.put("%workspace%", projectDir.replace("//", "/"));
         return flowParamMap;
     }
