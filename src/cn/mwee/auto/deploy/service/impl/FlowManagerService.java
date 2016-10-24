@@ -408,6 +408,7 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%vcsRep%", pTemplate.getVcsRep());
         flowParamMap.put("%vcsBranch%", pFlow.getVcsBranch());
         flowParamMap.put("%flowStep%", pFlow.getFlowStep() + "");
+        flowParamMap.put("%envSet%", getEnvSetString(pFlow.getFlowStep()));
         flowParamMap.put("%autoWorkspace%", workSpace);
         String env = "";
         switch (flow.getEnv()) {
@@ -419,6 +420,9 @@ public class FlowManagerService implements IFlowManagerService {
                 break;
             case Env.UAT:
                 env = "uat";
+                break;
+            case Env.FORTRESS:
+                env = "prod";
                 break;
             case Env.PROD:
                 env = "prod";
@@ -438,6 +442,46 @@ public class FlowManagerService implements IFlowManagerService {
         String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%projectName%");
         flowParamMap.put("%workspace%", projectDir.replace("//", "/"));
         return flowParamMap;
+    }
+
+    private String getEnvSetString (Byte flowStep) {
+        StringBuilder sb = new StringBuilder();
+        Set<String> envSet = getEnvSet(flowStep);
+        envSet.forEach(envStr -> {
+            if (sb.length() == 0) {
+                sb.append(envStr);
+            } else {
+                sb.append(",").append(envStr);
+            }
+        } );
+        return sb.toString();
+    }
+
+    private Set<String> getEnvSet(Byte flowStep) {
+        Set<String> envSet = new HashSet<>();
+        if (flowStep == null || flowStep == 0)
+            return envSet;
+        for (int i = 1; i<6;i++) {
+            int envCode = flowStep & (1<<i);
+            switch (envCode) {
+                case 2:
+                    envSet.add("dev");
+                    break;
+                case 4:
+                    envSet.add("test");
+                    break;
+                case 8:
+                    envSet.add("uat");
+                    break;
+                case 16:
+                    envSet.add("prod");
+                    break;
+                case 32:
+                    envSet.add("prod");
+                    break;
+            }
+        }
+        return envSet;
     }
 
     private void replaceFlowParams(FlowTask ft, Map<String, String> flowParamMap) {
