@@ -299,9 +299,9 @@ public class FlowManagerService implements IFlowManagerService {
                                 break;
                         }
                         */
-                        short priority = (short) (tt.getPriority() + 1);
-                        byte group = (byte) (tt.getGroup()+l);
-                        tt.setPriority(priority);
+                        /*short priority = (short) (tt.getPriority() + 1);
+                        tt.setPriority(priority);*/
+                        byte group = (byte) (tt.getGroup()+(l-1));
                         tt.setGroup(group);
                         FlowTask flowTask = buildFlowTask(tt, flowId, zones[i], flowParamMap, userParamsMap);
                         fts.add(flowTask);
