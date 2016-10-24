@@ -300,7 +300,9 @@ public class FlowManagerService implements IFlowManagerService {
                         }
                         */
                         short priority = (short) (tt.getPriority() + 1);
+                        byte group = (byte) (tt.getGroup()+l);
                         tt.setPriority(priority);
+                        tt.setGroup(group);
                         FlowTask flowTask = buildFlowTask(tt, flowId, zones[i], flowParamMap, userParamsMap);
                         fts.add(flowTask);
                     }
