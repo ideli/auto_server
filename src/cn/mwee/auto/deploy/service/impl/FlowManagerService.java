@@ -265,6 +265,7 @@ public class FlowManagerService implements IFlowManagerService {
                 //构建模板的构建任务单独出来
                 if (flow.getType() == TemplateType.BUILD && tt.getGroup().equals(GroupType.BuildGroup) && pFlow != null) {
                     Byte flowStep = pFlow.getFlowStep();
+                    byte group = tt.getGroup();
                     for (int l = 1; l < 6; l++) {
                         int step = flowStep & (1 << l);
                         if (step == 0) continue;
@@ -301,8 +302,7 @@ public class FlowManagerService implements IFlowManagerService {
                         */
                         /*short priority = (short) (tt.getPriority() + 1);
                         tt.setPriority(priority);*/
-                        byte group = (byte) (tt.getGroup()+(l-1));
-                        tt.setGroup(group);
+                        tt.setGroup((byte)(group+l-1));
                         FlowTask flowTask = buildFlowTask(tt, flowId, zones[i], flowParamMap, userParamsMap);
                         fts.add(flowTask);
                     }
