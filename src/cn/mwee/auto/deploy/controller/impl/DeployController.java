@@ -334,6 +334,7 @@ public class DeployController implements IDeployController {
                     result.put("subTemplate", buildTemplate);
                     result.put("taskParamKeys", templateManagerService.getTemplateTaskParamKeys(buildTemplate.getId()));
                 }*/
+                result.put("templateInfo", templateManagerService.getTemplate(flow.getTemplateId()));
                 result.put("lastSubFlows", flowManagerService.getAllLastSubFlow(req.getFlowId()));
                 return new NormalReturn("200", "success", result);
             } else {
