@@ -548,6 +548,14 @@ public class FlowManagerService implements IFlowManagerService {
         return true;
     }
 
+    private boolean updateSubFlowStatus(Integer flowId,String state,int stepState) {
+        Flow flowTmp = new Flow();
+        flowTmp.setId(flowId);
+        flowTmp.setState(state);
+        flowTmp.setStepState(stepState);
+        return flowMapper.updateByPrimaryKeySelective(flowTmp) > 0;
+    }
+
     private void sendNoticeMail(Flow flow, String stateNew) {
         //在成功或失败是发送邮件
         try {
@@ -830,6 +838,7 @@ public class FlowManagerService implements IFlowManagerService {
     public void executeFlowTask(Integer flowTaskId) {
         FlowTask flowTask = flowTaskMapper.selectByPrimaryKey(flowTaskId);
         taskMsgSender.sendTask(flowTask);
+        updateSubFlowStatus(flowTask.getFlowId(),TaskState.SUCCESS.name(),1);
     }
 
 
