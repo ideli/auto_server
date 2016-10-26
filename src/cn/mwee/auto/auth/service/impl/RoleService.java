@@ -11,9 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import cn.mwee.auto.auth.contract.role.RoleQueryContract;
-import cn.mwee.auto.auth.dao.AuthPermissionMapper;
-import cn.mwee.auto.auth.dao.AuthRolePermissionExtMapper;
-import cn.mwee.auto.auth.dao.AuthRolePermissionMapper;
+import cn.mwee.auto.auth.dao.*;
 import cn.mwee.auto.auth.model.*;
 import cn.mwee.auto.auth.service.IPermissionService;
 import cn.mwee.auto.auth.util.AuthUtils;
@@ -25,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cn.mwee.auto.auth.dao.AuthRoleMapper;
 import cn.mwee.auto.auth.service.IRoleService;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +48,9 @@ public class RoleService implements IRoleService {
     private AuthPermissionMapper authPermissionMapper;
 
     @Autowired
+    private AuthUserRoleMapper authUserRoleMapper;
+
+    @Autowired
     private IPermissionService permissionService;
 
 
@@ -72,8 +72,24 @@ public class RoleService implements IRoleService {
     }
 
     @Override
-    public boolean del(Integer id) {
-        return authRoleMapper.deleteByPrimaryKey(id) > 0;
+    public boolean del(Integer roleId) {
+        delRoleAuth(roleId);
+        delUserRole(roleId);
+        return authRoleMapper.deleteByPrimaryKey(roleId) > 0;
+    }
+
+    private boolean delUserRole(Integer roleId) {
+        AuthUserRoleExample example = new AuthUserRoleExample();
+        example.createCriteria().andRoleIdEqualTo(roleId);
+        authUserRoleMapper.deleteByExample(example);
+        return true;
+    }
+
+    private boolean delRoleAuth(Integer roleId) {
+        AuthRolePermissionExample example = new AuthRolePermissionExample();
+        example.createCriteria().andRoleIdEqualTo(roleId);
+        authRolePermissionMapper.deleteByExample(example);
+        return true;
     }
 
     @Override

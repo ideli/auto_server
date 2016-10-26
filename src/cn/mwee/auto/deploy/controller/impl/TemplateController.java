@@ -453,7 +453,7 @@ public class TemplateController extends AutoAbstractController implements ITempl
             templateManagerService.updateTemplateFlowStrategy(req.getTemplateId(),req.getStrategyZoneSize(),req.getStrategyInterval());
         } catch (Exception e) {
             logger.error("", e);
-            return new NormalReturn("500",e.getMessage());
+            return new NormalReturn("500",e);
         }
         return new NormalReturn();
     }

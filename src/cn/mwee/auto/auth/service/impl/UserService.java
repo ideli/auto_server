@@ -125,7 +125,9 @@ public class UserService implements IUserService {
         }
         Set<Integer> authRoleIds = new HashSet<>();
         authRoles.forEach(authRole -> {
-            authRoleIds.add(authRole.getId());
+			if (authRole != null) {
+				authRoleIds.add(authRole.getId());
+			}
         });
         allRoles.forEach(authRole -> {
             if (!authRoleIds.contains(authRole.getId()))
@@ -142,7 +144,9 @@ public class UserService implements IUserService {
         if (authUser == null) return roleCodeSet;
         List<AuthRole> roles = queryRoles(authUser.getId());
         if (CollectionUtils.isNotEmpty(roles)) {
-            roles.forEach(authRole -> roleCodeSet.add(authRole.getRolecode()));
+            roles.forEach(authRole -> {
+				if(authRole !=null) roleCodeSet.add(authRole.getRolecode());
+			});
         }
         return roleCodeSet;
 	}

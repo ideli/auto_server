@@ -89,6 +89,8 @@ public class SSHManager
         }
         catch(JSchException jschX)
         {
+            LOGGER.error("",jschX);
+            logError(jschX.getMessage());
             errorMessage = jschX.getMessage();
         }
 

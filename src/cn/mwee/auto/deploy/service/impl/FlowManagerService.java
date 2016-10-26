@@ -443,7 +443,7 @@ public class FlowManagerService implements IFlowManagerService {
         flowParamMap.put("%projectBackupPath%", autoBakDir + "/" + flowParamMap.get("%projectName%") + "_" + version);
 
 //        String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%env%") + "/" +flowParamMap.get("%projectName%");
-        String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%env%") + "/";
+        String projectDir = workSpace + "/" + pFlow.getId() + "/" + flowParamMap.get("%env%");
         flowParamMap.put("%workspace%", projectDir.replace("//", "/"));
         return flowParamMap;
     }
