@@ -131,6 +131,19 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
+    public List<AuthPermission> getProjectList(ProjectQueryContract queryContract) {
+        AuthPermissionExample example = new AuthPermissionExample();
+        AuthPermissionExample.Criteria criteria = example.createCriteria();
+        criteria.andIsprojectEqualTo(true)
+                .andLevelEqualTo((byte) 1)
+                .andTypeEqualTo((byte) 1);
+        if (StringUtils.isNotBlank(queryContract.getProjectName()))
+            criteria.andNameLike(SqlUtils.wrapLike(queryContract.getProjectName()));
+        example.setOrderByClause("id desc");
+        return authPermissionMapper.selectByExample(example);
+    }
+
+    @Override
     public List<AuthPermission> getProjectMenus(Integer projectId) {
         AuthPermissionExample example = new AuthPermissionExample();
         example.createCriteria().andParentIdEqualTo(projectId)

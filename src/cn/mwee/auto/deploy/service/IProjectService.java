@@ -42,12 +42,18 @@ public interface IProjectService {
     boolean updateProject(Integer projectId, String projectName, String projectUrl, String desc) throws Exception;
 
     /**
-     * 项目查询
+     * 项目查询(分页)
      * @param queryContract query params
      * @return
      */
     BaseQueryResult<AuthPermission> getProjectPages(ProjectQueryContract queryContract);
 
+    /**
+     * 项目查询
+     * @param queryContract query params
+     * @return
+     */
+    List<AuthPermission> getProjectList(ProjectQueryContract queryContract);
 
     /**
      * 项目菜单列表

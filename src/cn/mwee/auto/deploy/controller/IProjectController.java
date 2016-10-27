@@ -39,11 +39,18 @@ public interface IProjectController extends IController {
     NormalReturn updateProject(ServiceRequest request);
 
     /**
-     * 项目列表
+     * 项目列表（分页）
      * @param request 请求
      * @return 响应
      */
     NormalReturn queryProjects(ServiceRequest request);
+
+    /**
+     * 项目列表（）
+     * @param request 请求
+     * @return 响应
+     */
+    NormalReturn getProjects(ServiceRequest request);
 
     /**
      * 新增项目成员

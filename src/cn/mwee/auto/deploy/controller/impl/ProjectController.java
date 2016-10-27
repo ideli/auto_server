@@ -81,6 +81,19 @@ public class ProjectController implements IProjectController {
     }
 
     @Override
+    @Contract(ProjectQueryContract.class)
+    public NormalReturn getProjects(ServiceRequest request) {
+        ProjectQueryContract req = request.getContract();
+        try {
+            return new NormalReturn(projectService.getProjectList(req));
+        } catch (Exception e) {
+            logger.error("", e);
+            return new NormalReturn("500", e.getMessage());
+        }
+    }
+
+
+    @Override
     @Contract(ProjectUserAddContract.class)
     public NormalReturn projectUserAdd(ServiceRequest request) {
         ProjectUserAddContract req = request.getContract();

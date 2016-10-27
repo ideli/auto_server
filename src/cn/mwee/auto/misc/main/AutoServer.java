@@ -143,6 +143,7 @@ public class AutoServer extends BaseNioServer {
         MyApplicationContext.getInstance();
         AutoServer o = new AutoServer();
         registerHandler(o, "jsonRouter");
+        registerGetHandler(o, "jsonRouter");
         o.init();
         o.start();
         Runtime.getRuntime().addShutdownHook(new ShutdownThread(o));
